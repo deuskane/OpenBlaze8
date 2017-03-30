@@ -24,6 +24,7 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 library work;
 use work.OpenBlaze8_pkg.all;
+use work.pbi_pkg.all;
 
 entity pbi_OpenBlaze8 is
   generic (
@@ -65,31 +66,27 @@ begin  -- architecture rtl
   
   OpenBlaze8 : entity work.OpenBlaze8(rtl)
   generic map(
-     STACK_DEPTH     => STACK_DEPTH    ;
-     RAM_DEPTH       => RAM_DEPTH      ;
-     DATA_WIDTH      => DATA_WIDTH     ;
-     ADDR_INST_WIDTH => ADDR_INST_WIDTH;
-     REGFILE_DEPTH   => REGFILE_DEPTH  ;
+     STACK_DEPTH     => STACK_DEPTH    ,
+     RAM_DEPTH       => RAM_DEPTH      ,
+     DATA_WIDTH      => DATA_WIDTH     ,
+     ADDR_INST_WIDTH => ADDR_INST_WIDTH,
+     REGFILE_DEPTH   => REGFILE_DEPTH  ,
      MULTI_CYCLE     => MULTI_CYCLE    
-     );
+     )
   port map(
-    clock_i           => clk_i          ;
-    clock_enable_i    => cke            ;
-    reset_i           => arst           ;
-    address_o         => iaddr_o        ;
-    instruction_i     => idata_i        ;
-    port_id_o         => pbi_ini.addr   ;
-    in_port_i         => pbi_tgt.rdata  ;
-    out_port_o        => pbi_ini.wdata  ;
-    read_strobe_o     => pbi_ini.re     ;
-    write_strobe_o    => pbi_ini.we     ;
-    interrupt_i       => interrupt_i    ;
-    interrupt_ack_o   => interrupt_ack_o;
+    clock_i           => clk_i          ,
+    clock_enable_i    => cke            ,
+    reset_i           => arst           ,
+    address_o         => iaddr_o        ,
+    instruction_i     => idata_i        ,
+    port_id_o         => pbi_ini_o.addr   ,
+    in_port_i         => pbi_tgt_i.rdata  ,
+    out_port_o        => pbi_ini_o.wdata  ,
+    read_strobe_o     => pbi_ini_o.re     ,
+    write_strobe_o    => pbi_ini_o.we     ,
+    interrupt_i       => interrupt_i    ,
+    interrupt_ack_o   => interrupt_ack_o,
     debug_o           => debug_o
     );
-end OpenBlaze8;
-
-  
-  
 
 end architecture rtl;

@@ -23,18 +23,18 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 library work;
-use work.param_pkg.all;
-use work.math_pkg.all;
+--use work.param_pkg.all;
+--use work.math_pkg.all;
 use work.pbi_pkg.all;
 
 entity pbi_wrapper_target is
   -- =====[ Parameters ]==========================
   generic (
-    SIZE_ADDR      : natural := 8;
+--  SIZE_ADDR      : natural := 8;
     SIZE_DATA      : natural := 8;
-    SIZE_ADDR_ID   : natural := 8;
+--  SIZE_ADDR_ID   : natural := 8;
     SIZE_ADDR_IP   : natural := 0;
-    ID             : natural := std_logic_vector (SIZE_ADDR-1 downto 0) := (others => '0')
+    ID             : std_logic_vector (PBI_ADDR_WIDTH-1 downto 0) := (others => '0')
      );
   -- =====[ Interfaces ]==========================
   port (
@@ -58,14 +58,18 @@ entity pbi_wrapper_target is
 end pbi_wrapper_target;
 
 architecture rtl of pbi_wrapper_target is
-  alias pbi_id          : std_logic_vector(SIZE_ADDR_ID-1 downto 0) is pbi_ini_i.addr(SIZE_ADDR-1 downto SIZE_ADDR-SIZE_ADDR_ID);
+  constant SIZE_ADDR_ID : natural := PBI_ADDR_WIDTH-SIZE_ADDR_IP;
+  
+  alias pbi_id          : std_logic_vector(SIZE_ADDR_ID-1 downto 0) is pbi_ini_i.addr(PBI_ADDR_WIDTH-1 downto SIZE_ADDR_IP);
 
+  signal cs             : std_logic;
+  
 begin  -- rtl
 
   -----------------------------------------------------------------------------
   -- Check Parameters
   -----------------------------------------------------------------------------
-  assert SIZE_ADDR_IP=(SIZE_ADDR-SIZE_ADDR_ID) report "Invalid value at the parameter 'SIZE_ADDR_IP'" severity FAILURE;
+  assert SIZE_ADDR_IP>PBI_ADDR_WIDTH report "Invalid value at the parameter 'SIZE_ADDR_IP'" severity FAILURE;
   
   -----------------------------------------------------------------------------
   -- Chip Select
@@ -84,10 +88,10 @@ begin  -- rtl
   -----------------------------------------------------------------------------
   -- To IP
   -----------------------------------------------------------------------------
-  ip_cs_o        <= addr_match;
+  ip_cs_o        <= cs;
   ip_re_o        <= pbi_ini_i.re;
   ip_we_o        <= pbi_ini_i.we;
-  ip_addr_o      <= pbi_ini_i.addr;
-  ip_wdata_o     <= pbi_ini_i.wdata;
+  ip_addr_o      <= pbi_ini_i.addr (ip_addr_o'range);
+  ip_wdata_o     <= pbi_ini_i.wdata(ip_wdata_o'range);
 
 end rtl;

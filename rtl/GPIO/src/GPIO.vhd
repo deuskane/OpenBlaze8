@@ -120,7 +120,8 @@ begin
 --rdata_o  <= data_in_r when (addr_i = addr_read_data) else
 --                (others => '0');
 
-  rdata_o  <= data_in_r; -- Only one read register
+  rdata_o  <= (rdata_o'range => data_in_r -- Only one read register
+              ,others => '0');
   end generate gen_rdata_force_out_off;
     
   -----------------------------------------------------------------------------
