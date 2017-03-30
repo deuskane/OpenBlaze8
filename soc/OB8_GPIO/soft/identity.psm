@@ -1,0 +1,40 @@
+; ;------------------------------------
+; ; Test 000
+; ;
+; ;------------------------------------
+
+; ;------------------------------------
+; ; directive compilation fichier
+; ;------------------------------------
+
+                    VHDL      "../../../softwares/pBlazIDE374/ROM/ROM_blank_adh.vhd", "../src/identity.vhd", "OpenBlaze8_ROM"
+
+; ;------------------------------------
+; ; Constantes
+; ;------------------------------------
+sp                  EQU       sF
+
+; ;------------------------------------
+; ; directives pour le simulateur:  definition des  E/S
+; ;------------------------------------
+switch_id           EQU       $00
+led_id              EQU       $04
+
+switch              DSIN      switch_id
+led                 DSOUT     led_id
+
+; ;------------------------------------
+; ; MAIN
+; ;------------------------------------
+                    ORG       $00
+main: 
+main_loop: 
+                    IN        s0, switch_id
+                    OUT       s0, led_id
+                    JUMP      main_loop
+
+; ;------------------------------------
+; ; Interrupt VECTOR
+; ;------------------------------------
+                    ORG       $3FF
+                    RETI      ENABLE
