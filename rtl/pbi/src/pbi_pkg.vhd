@@ -6,7 +6,7 @@
 -- Author     : mrosiere
 -- Company    : 
 -- Created    : 2017-03-15
--- Last update: 2017-03-18
+-- Last update: 2017-03-30
 -- Platform   : 
 -- Standard   : VHDL'93/02
 -------------------------------------------------------------------------------
@@ -28,8 +28,8 @@ package pbi_pkg is
   constant PBI_DATA_WIDTH : natural := 8;
   
   type pbi_ini_t is record
-    re         : std_logic;                              -- READ_STROBE
-    we         : std_logic;                              -- WRITE_STROBE
+    re         : std_logic;                                   -- READ_STROBE
+    we         : std_logic;                                   -- WRITE_STROBE
     addr       : std_logic_vector(PBI_ADDR_WIDTH-1 downto 0); -- PORT_ID
     wdata      : std_logic_vector(PBI_DATA_WIDTH-1 downto 0); -- IN_PORT
   end record pbi_init_t;

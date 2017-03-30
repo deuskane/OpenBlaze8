@@ -6,7 +6,7 @@
 -- Author     : Mathieu Rosiere
 -- Company    : 
 -- Created    : 2013-12-26
--- Last update: 2017-03-25
+-- Last update: 2017-03-30
 -- Platform   : 
 -- Standard   : VHDL'87
 -------------------------------------------------------------------------------
@@ -32,7 +32,7 @@ use IEEE.numeric_std.ALL;
 
 entity GPIO is
   generic(
-    SIZE_ADDR        : natural:=8;     -- Bus Address Width
+    SIZE_ADDR        : natural:=2;     -- Bus Address Width
     SIZE_DATA        : natural:=8;     -- Bus Data    Width
     NB_IO            : natural:=8;     -- Number of IO. Must be <= SIZE_DATA
     DATA_OE_INIT     : boolean:=false; -- Direction of the IO after a reset
@@ -52,9 +52,11 @@ entity GPIO is
     wdata_i          : in    std_logic_vector (SIZE_DATA-1 downto 0);
     rdata_o          : out   std_logic_vector (SIZE_DATA-1 downto 0);
     busy_o           : out   std_logic;
-    
+
+    -- To/From IO
     data_io          : inout std_logic_vector (NB_IO-1     downto 0);
 
+    -- To/From IT Ctrl
     interrupt_o      : out   std_logic;
     interrupt_ack_i  : in    std_logic
           );
