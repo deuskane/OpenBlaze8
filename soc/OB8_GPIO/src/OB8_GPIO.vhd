@@ -51,9 +51,6 @@ architecture rtl of OB8_GPIO is
   signal pbi_tgt_switch               : pbi_tgt_t;
   signal pbi_tgt_led                  : pbi_tgt_t;
 
-  signal switch     : std_logic_vector(5 downto 0);
-  signal led        : std_logic_vector(7 downto 0);
-
 begin  -- architecture rtl
 
   ins_pbi_OpenBlaze8 : entity work.pbi_OpenBlaze8(rtl)
@@ -102,7 +99,9 @@ begin  -- architecture rtl
     arstn_i          => arstn_i       ,
     pbi_ini_i        => pbi_ini       ,
     pbi_tgt_o        => pbi_tgt_switch,
-    data_io          => switch        ,
+    data_i           => switch_i      ,
+    data_o           => open          ,
+    data_oe_o        => open          ,
     interrupt_o      => open          ,
     interrupt_ack_i  => '0'
     );
@@ -121,14 +120,13 @@ begin  -- architecture rtl
     arstn_i          => arstn_i    ,
     pbi_ini_i        => pbi_ini    ,
     pbi_tgt_o        => pbi_tgt_led,
-    data_io          => led        ,
+    data_i           => X"00"      ,
+    data_o           => led_o      ,
+    data_oe_o        => open       ,
     interrupt_o      => open       ,
     interrupt_ack_i  => '0'
     );
 
-  switch <= switch_i;
-  led_o  <= led;
-  
 end architecture rtl;
     
   
