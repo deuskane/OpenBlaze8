@@ -1,0 +1,95 @@
+; ;------------------------------------
+; ; Test 029
+; ; fetch/store direct address
+; ;------------------------------------
+
+; ;------------------------------------
+; ; directive compilation fichier
+; ;------------------------------------
+
+VHDL      "../ROM_blank_adh.vhd", "../../OpenBlaze8_ROM.vhd", "OpenBlaze8_ROM"
+
+; ;------------------------------------
+; ; Constantes
+; ;------------------------------------
+sp                  EQU       sF
+
+test_val_ok         EQU       $FA
+test_val_ko         EQU       $ED
+
+; ;------------------------------------
+; ; directives pour le simulateur:  definition des  E/S
+; ;------------------------------------
+switch_id           EQU       $00
+led_id              EQU       $20
+debug_id            EQU       $e0
+
+switch              DSIN      switch_id
+led                 DSOUT     led_id
+debug               DSOUT     debug_id
+
+; ;------------------------------------
+; ; MAIN
+; ;------------------------------------
+                    ORG       $000
+main: 
+
+                    LOAD      s0, $04
+                    STORE     s0, 0
+                    LOAD      s0, $06
+                    STORE     s0, 1
+                    LOAD      s0, $86
+                    STORE     s0, 2
+
+                    LOAD      s0, $21
+                    STORE     s0, 61
+                    LOAD      s0, $07
+                    STORE     s0, 62
+                    LOAD      s0, $81
+                    STORE     s0, 63
+
+                    FETCH     s0, 0
+                    COMP      s0, $04
+                    JUMP      NZ, test_ko
+
+                    FETCH     s0, 1
+                    COMP      s0, $06
+                    JUMP      NZ, test_ko
+
+                    FETCH     s0, 2
+                    COMP      s0, $86
+                    JUMP      NZ, test_ko
+
+                    FETCH     s0, 61
+                    COMP      s0, $21
+                    JUMP      NZ, test_ko
+
+                    FETCH     s0, 62
+                    COMP      s0, $07
+                    JUMP      NZ, test_ko
+
+                    FETCH     s0, 63
+                    COMP      s0, $81
+                    JUMP      NZ, test_ko
+
+                    JUMP      test_ok
+
+; ;------------------------------------
+; ; Test ok/ko
+; ;------------------------------------
+test_ko:
+                    LOAD      sE, test_val_ko
+                    OUT       sE, debug_id
+                    JUMP      test_ko
+
+                    ORG       $3FC
+test_ok: 
+                    LOAD      sE, test_val_ok
+                    OUT       sE, debug_id
+                    JUMP      test_ok
+
+; ;------------------------------------
+; ; Interrupt VECTOR
+; ;------------------------------------
+                    ORG       $3FF
+                    RETI      ENABLE

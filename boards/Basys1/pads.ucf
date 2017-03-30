@@ -1,0 +1,107 @@
+# clock pin for Basys rev E Board                                                                                                                        
+ NET "clk"        LOC = "P54"; # Bank = 2,  Pin name = IO_L5N_2/D3/GCLK31, Sch name = CLK1
+#NET "Clk2"       LOC = "P53"; # Bank = 2,  Pin name = IO_L5P_2/D4/GCLK30, Sch name = CLK2
+#
+ NET "clk"        CLOCK_DEDICATED_ROUTE = FALSE; # uncomment this line to compile with ISE 10 or above
+#NET "CLK2"       CLOCK_DEDICATED_ROUTE = FALSE; # uncomment this line to compile with ISE 10 or above
+                                                                                                                        
+## onBoard USB controller                                                                                                                        
+# NET "EppAstb"   LOC = "P125"; # Bank = 0, Pin name = IO_L5P_0/GCLK14,    Sch name = U-FLGA
+# NET "EppDstb"   LOC = "P124"; # Bank = 0, Pin name = IO/VREF_0,          Sch name = U-FLGB
+# NET "UsbFlag"   LOC = "P123"; # Bank = 0, Pin name = IO_L4N_0/GCLK13,    Sch name = U-FLGC
+# NET "EppWait"   LOC = "P105"; # Bank = 1, Pin name = IO_L10P_1/LDC1,     Sch name = U-SLRD
+# NET "EppDB<0>"  LOC = "P142"; # Bank = 0, Pin name = IO_L10P_0,          Sch name = U-D0
+# NET "EppDB<1>"  LOC = "P140"; # Bank = 0, Pin name = IO_L9N_0,           Sch name = U-D1
+# NET "EppDB<2>"  LOC = "P139"; # Bank = 0, Pin name = IO_L9P_0,           Sch name = U-D2
+# NET "EppDB<3>"  LOC = "P135"; # Bank = 0, Pin name = IO_L8N_0/VREF_0,    Sch name = U-D3
+# NET "EppDB<4>"  LOC = "P134"; # Bank = 0, Pin name = IO_L8P_0,           Sch name = U-D4
+# NET "EppDB<5>"  LOC = "P132"; # Bank = 0, Pin name = IO,                 Sch name = U-D5
+# NET "EppDB<6>"  LOC = "P131"; # Bank = 0, Pin name = IO_L7N_0/GCLK19,    Sch name = U-D6
+# NET "EppDB<7>"  LOC = "P130"; # Bank = 0, Pin name = IO_L7P_0/GCLK18,    Sch name = U-D7
+#                                                                                                                        
+# NET "UsbClk"    LOC = "P126"; # Bank = 0, Pin name = IO_L5N_0/GCLK15,    Sch name = U-IFCLK
+#                                                                                                                        
+# NET "UsbOE"     LOC = "P117"; # Bank = 0, Pin name = IO_L2N_0,           Sch name = U-SLOE
+# NET "UsbWR"     LOC = "P104"; # Bank = 1, Pin name = IO_L9N_1/LDC0,      Sch name = U-SLWR
+# NET "UsbPktEnd" LOC = "P112"; # Bank = 0, Pin name = IO_L1P_0,           Sch name = U-PKTEND
+#                                                                                                                        
+# NET "UsbDir"    LOC = "P106"; # Bank = 1, Pin name = IO_L10N_1/LDC2,     Sch name = U-SLCS
+# NET "UsbMode"   LOC = "P122"; # Bank = 0, Pin name = IO_L4P_0/GCLK12,    Sch name = U-INT0#
+#                                                                                                                        
+# NET "UsbAdr<0>" LOC = "P116"; # Bank = 0, Pin name = IO_L2P_0,           Sch name = U-FAD0
+# NET "UsbAdr<1>" LOC = "P113"; # Bank = 0, Pin name = IO_L1N_0,           Sch name = U-FAD1
+
+# onBoard 7seg display                                                                                                                        
+ NET "digit_value<0>"    LOC = "P25"; # Bank = 3, Pin name = IO_L8P_3,              Sch name = CA
+ NET "digit_value<1>"    LOC = "P16"; # Bank = 3, Pin name = IO_L5P_3/GCLK22,       Sch name = CB
+ NET "digit_value<2>"    LOC = "P23"; # Bank = 3, Pin name = IO_L7N_3/GCLK27        Sch name = CC
+ NET "digit_value<3>"    LOC = "P21"; # Bank = 3, Pin name = IO_L6N_3/GCLK25,       Sch name = CD
+ NET "digit_value<4>"    LOC = "P20"; # Bank = 3, Pin name = IO_L6P_3/GCLK24/TRDY2, Sch name = CE
+ NET "digit_value<5>"    LOC = "P17"; # Bank = 3, Pin name = IO_L5N_3/GCLK23/IRDY2, Sch name = CF
+ NET "digit_value<6>"    LOC = "P83"; # Bank = 1, Pin name = IO/VREF_1,             Sch name = CG
+ NET "digit_value<7>"    LOC = "P22"; # Bank = 3, Pin name = IO_L7P_3/GCLK26,       Sch name = DP
+
+ NET "digit_select<0>"     LOC = "P34"; # Bank = 3, Pin name = IO_L10P_3,           Sch name = AN1
+ NET "digit_select<1>"     LOC = "P33"; # Bank = 3, Pin name = IO_L9N_3,            Sch name = AN2
+ NET "digit_select<2>"     LOC = "P32"; # Bank = 3, Pin name = IO_L9P_3,            Sch name = AN3
+ NET "digit_select<3>"     LOC = "P26"; # Bank = 3, Pin name = IO_L8N_3,            Sch name = AN4
+
+#  Leds                                                                                                                        
+ NET "led<0>"    LOC = "P15"; # Bank = 3, Pin name = IO_L4N_3/GCLK21      Sch name = LD0
+ NET "led<1>"    LOC = "P14"; # Bank = 3, Pin name = IO_L4P_3/GCLK20      Sch name = LD1
+ NET "led<2>"    LOC = "P8";  # Bank = 3, Pin name = IO_L3N_3,            Sch name = LD2
+ NET "led<3>"    LOC = "P7";  # Bank = 3, Pin name = IO_L3P_3,            Sch name = LD3
+ NET "led<4>"    LOC = "P5";  # Bank = 3, Pin name = IO_L2N_3/VREF_3,     Sch name = LD4
+ NET "led<5>"    LOC = "P4";  # Bank = 3, Pin name = IO_L2P_3,            Sch name = LD5
+ NET "led<6>"    LOC = "P3";  # Bank = 3, Pin name = IO_L1N_3,            Sch name = LD6
+ NET "led<7>"    LOC = "P2";  # Bank = 3, Pin name = IO_L1P_3,            Sch name = LD7
+
+# Switches                                                                                                                        
+ NET "switch<0>"     LOC = "P38"; # Bank = 2, Pin name = IP,                  Sch name = SW0
+ NET "switch<1>"     LOC = "P36"; # Bank = 3, Pin name = IP,                  Sch name = SW1
+ NET "switch<2>"     LOC = "P29"; # Bank = 3, Pin name = IO(3S100E)/IP(3S250E),Sch name = SW2
+ NET "switch<3>"     LOC = "P24"; # Bank = 3, Pin name = IP                   Sch name = SW3
+ NET "switch<4>"     LOC = "P18"; # Bank = 3, Pin name = IP,                  Sch name = SW4
+ NET "switch<5>"     LOC = "P12"; # Bank = 3, Pin name = IP/VREF_3,           Sch name = SW5
+ NET "switch<6>"     LOC = "P10"; # Bank = 3, Pin name = IO(3S100E)/IP(3S250E),Sch name = SW6
+ NET "switch<7>"     LOC = "P6";  # Bank = 3, Pin name = IP,                  Sch name = SW7
+
+# Buttons                                                                                                                        
+ NET "reset"        LOC = "P69"; # Bank = 2, Pin name = IP,                   Sch name = BTN0
+ NET "button<0>"    LOC = "P48"; # Bank = 2, Pin name = IP_L3N_2/VREF_2       Sch name = BTN1
+ NET "button<1>"    LOC = "P47"; # Bank = 2, Pin name = IP_L3P_2,             Sch name = BTN2
+#NET "button<2>"    LOC = "P41"; # Bank = 2, Pin name = IP,                   Sch name = BTN3
+
+## PS/2 connector                                                                                                                        
+ NET "PS2C"      LOC = "P96"; # Bank = 1, Pin name = IO_L8P_1/A2,          Sch name = PS2C
+ NET "PS2D"      LOC = "P97"; # Bank = 1, Pin name = IO_L8N_1/A1,          Sch name = PS2D
+#                                                                                                                        
+## VGA connector                                                                                                                        
+ NET "vga_HSYNC"    LOC = "P39"; # Bank = 2, Pin name = IO_L1P_2/CSO_B,    Sch name = HSYNC
+ NET "vga_VSYNC"    LOC = "P35"; # Bank = 3, Pin name = IO_L10N_3,         Sch name = VSYNC
+ NET "vga_Red<2>"   LOC = "P67"; # Bank = 2, Pin name = IO_L9P_2/VS2/A19   Sch name = RED2
+ NET "vga_Red<1>"   LOC = "P68"; # Bank = 2, Pin name = IO_L9N_2/VS1/A18,  Sch name = RED1
+ NET "vga_Red<0>"   LOC = "P70"; # Bank = 2, Pin name = IO_L10P_2/VS0/A17, Sch name = RED0
+ NET "vga_Green<2>" LOC = "P50"; # Bank = 2, Pin name = IO_L4P_2/D7/GCLK28,Sch name = GRN2
+ NET "vga_Green<1>" LOC = "P51"; # Bank = 2, Pin name = IO_L4N_2/D6/GCLK29,Sch name = GRN1
+ NET "vga_Green<0>" LOC = "P52"; # Bank = 2, Pin name = IO/D5,             Sch name = GRN0
+ NET "vga_Blue<2>"  LOC = "P43"; # Bank = 2, Pin name = IO_L2P_2/DOUT/BUSY,Sch name = BLU1
+ NET "vga_Blue<1>"  LOC = "P44"; # Bank = 2, Pin name = IO_L2N_2/MOSI/CSI_B,Sch name = BLU0
+                                                                                                                        
+## 6 pin connectors                                                                                                                        
+# NET "PIO<72>" LOC = "P81"| DRIVE = 2 | PULLUP; # Bank = 1, Pin name = IO_L3P_1/A12,            Sch name = PIO-1
+# NET "PIO<73>" LOC = "P91"| DRIVE = 2 | PULLUP; # Bank = 1, Pin name = IO_L6P_1/A6/GCLK8/IRDY1, Sch name = PIO-2
+# NET "PIO<74>" LOC = "P82"| DRIVE = 2 | PULLUP; # Bank = 1, Pin name = IO_L3N_1/A11,            Sch name = PIO-3
+# NET "PIO<75>" LOC = "P92"| DRIVE = 2 | PULLUP; # Bank = 1, Pin name = IO_L6N_1/A5/GCLK9,       Sch name = PIO-4
+# NET "PIO<76>" LOC = "P87"| DRIVE = 2 | PULLUP; # Bank = 1, Pin name = IO_L5P_1/A8/GCLK6,       Sch name = PIO-1
+# NET "PIO<77>" LOC = "P93"| DRIVE = 2 | PULLUP; # Bank = 1, Pin name = IO_L7P_1/A4/GCLK10,      Sch name = PIO-2
+# NET "PIO<78>" LOC = "P88"| DRIVE = 2 | PULLUP; # Bank = 1, Pin name = IO_L5N_1/A7/GCLK7/TRDY1, Sch name = PIO-3
+# NET "PIO<79>" LOC = "P94"| DRIVE = 2 | PULLUP; # Bank = 1, Pin name = IO_L7N_1/A3/GCLK11,      Sch name = PIO-4
+# NET "PIO<80>" LOC = "P77"| DRIVE = 2 | PULLUP; # Bank = 1, Pin name = IO_L2N_1/A13,            Sch name = PIO-1
+# NET "PIO<81>" LOC = "P86"| DRIVE = 2 | PULLUP; # Bank = 1, Pin name = IO_L4N_1/A9/GCLK5,       Sch name = PIO-2
+# NET "PIO<82>" LOC = "P76"| DRIVE = 2 | PULLUP; # Bank = 1, Pin name = IO_L2P_1/A14,            Sch name = PIO-3
+# NET "PIO<83>" LOC = "P85"| DRIVE = 2 | PULLUP; # Bank = 1, Pin name = IO_L4P_1/A10/GCLK4,      Sch name = PIO-4
+# NET "PIO<84>" LOC = "P75"| DRIVE = 2 | PULLUP; # Bank = 1, Pin name = IO_L1N_1/A15,            Sch name = PIO-1
+# NET "PIO<85>" LOC = "P59"| DRIVE = 2 | PULLUP; # Bank = 2, Pin name = IO_L7N_2/M0/GCLK3,       Sch name = PIO-2
+# NET "PIO<86>" LOC = "P74"| DRIVE = 2 | PULLUP; # Bank = 1, Pin name = IO_L1P_1/A16,            Sch name = PIO-3
+# NET "PIO<87>" LOC = "P58"| DRIVE = 2 | PULLUP; # Bank = 2, Pin name = IO_L7P_2/M1/GCLK2,       Sch name = PIO-4

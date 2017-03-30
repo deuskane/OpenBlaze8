@@ -1,0 +1,78 @@
+; ;------------------------------------
+; ; Test 003
+; ; Multi Jump Incondionnel
+; ;------------------------------------
+
+; ;------------------------------------
+; ; directive compilation fichier
+; ;------------------------------------
+
+VHDL      "../ROM_blank_adh.vhd", "../../OpenBlaze8_ROM.vhd", "OpenBlaze8_ROM"
+
+; ;------------------------------------
+; ; Constantes
+; ;------------------------------------
+sp                  EQU       sF
+
+test_val_ok         EQU       $FA
+test_val_ko         EQU       $ED
+
+; ;------------------------------------
+; ; directives pour le simulateur:  definition des  E/S
+; ;------------------------------------
+switch_id           EQU       $00
+led_id              EQU       $20
+debug_id            EQU       $e0
+
+switch              DSIN      switch_id
+led                 DSOUT     led_id
+debug               DSOUT     debug_id
+
+; ;------------------------------------
+; ; MAIN
+; ;------------------------------------
+                    ORG       $000
+main: 
+                    JUMP      saut1
+                    LOAD      sE, test_val_ko
+
+saut3: 
+                    JUMP      saut4
+                    LOAD      sE, test_val_ko
+
+
+saut1: 
+                    JUMP      saut2
+                    LOAD      sE, test_val_ko
+
+saut5: 
+                    JUMP      test_ok
+                    LOAD      sE, test_val_ko
+
+saut4: 
+                    JUMP      saut5
+                    LOAD      sE, test_val_ko
+
+saut2: 
+                    JUMP      saut3
+                    LOAD      sE, test_val_ko
+
+; ;------------------------------------
+; ; Test ok/ko
+; ;------------------------------------
+test_ko:
+                    LOAD      sE, test_val_ko
+                    OUT       sE, debug_id
+                    JUMP      test_ko
+
+                    ORG       $3FC
+test_ok: 
+                    LOAD      sE, test_val_ok
+                    OUT       sE, debug_id
+                    JUMP      test_ok
+
+; ;------------------------------------
+; ; Interrupt VECTOR
+; ;------------------------------------
+                    ORG       $3FF
+                    RETI      ENABLE

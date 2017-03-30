@@ -1,0 +1,127 @@
+; ;------------------------------------
+; ; Test 020
+; ; SL0 : Shift Left, zero fill
+; ;------------------------------------
+
+; ;------------------------------------
+; ; directive compilation fichier
+; ;------------------------------------
+
+VHDL      "../ROM_blank_adh.vhd", "../../OpenBlaze8_ROM.vhd", "OpenBlaze8_ROM"
+
+; ;------------------------------------
+; ; Constantes
+; ;------------------------------------
+sp                  EQU       sF
+
+test_val_ok         EQU       $FA
+test_val_ko         EQU       $ED
+
+; ;------------------------------------
+; ; directives pour le simulateur:  definition des  E/S
+; ;------------------------------------
+switch_id           EQU       $00
+led_id              EQU       $20
+debug_id            EQU       $e0
+
+switch              DSIN      switch_id
+led                 DSOUT     led_id
+debug               DSOUT     debug_id
+
+; ;------------------------------------
+; ; MAIN
+; ;------------------------------------
+                    ORG       $000
+main: 
+                    LOAD      s0, $A5
+                    LOAD      s1, $00
+
+; RL
+                    LOAD      s9, s0
+
+                    SL0       s9                  ; 10100101 -> 01001010
+                    JUMP      NC, test_ko
+                    JUMP      Z, test_ko
+
+                    COMP      s9, $4A
+                    JUMP      C, test_ko
+                    JUMP      NZ, test_ko
+
+                    SL0       s9                  ; 01001010 -> 10010100
+                    JUMP      C, test_ko
+                    JUMP      Z, test_ko
+
+                    COMP      s9, $94
+                    JUMP      C, test_ko
+                    JUMP      NZ, test_ko
+
+                    SL0       s9                  ; 10010100 -> 00101000
+                    JUMP      NC, test_ko
+                    JUMP      Z, test_ko
+
+                    COMP      s9, $28
+                    JUMP      C, test_ko
+                    JUMP      NZ, test_ko
+
+                    SL0       s9                  ; 00101000 -> 01010000
+                    JUMP      C, test_ko
+                    JUMP      Z, test_ko
+
+                    COMP      s9, $50
+                    JUMP      C, test_ko
+                    JUMP      NZ, test_ko
+
+                    SL0       s9                  ; 01010000 -> 10100000
+                    JUMP      C, test_ko
+                    JUMP      Z, test_ko
+
+                    COMP      s9, $A0
+                    JUMP      C, test_ko
+                    JUMP      NZ, test_ko
+
+                    SL0       s9                  ; 10100000 -> 01000000
+                    JUMP      NC, test_ko
+                    JUMP      Z, test_ko
+
+                    COMP      s9, $40
+                    JUMP      C, test_ko
+                    JUMP      NZ, test_ko
+
+                    SL0       s9                  ; 01000000 -> 10000000
+                    JUMP      C, test_ko
+                    JUMP      Z, test_ko
+
+                    COMP      s9, $80
+                    JUMP      C, test_ko
+                    JUMP      NZ, test_ko
+
+                    SL0       s9                  ; 10000000 -> 00000000
+                    JUMP      NC, test_ko
+                    JUMP      NZ, test_ko
+
+                    COMP      s9, $00
+                    JUMP      C, test_ko
+                    JUMP      NZ, test_ko
+
+
+                    JUMP      test_ok
+
+; ;------------------------------------
+; ; Test ok/ko
+; ;------------------------------------
+test_ko:
+                    LOAD      sE, test_val_ko
+                    OUT       sE, debug_id
+                    JUMP      test_ko
+
+                    ORG       $3FC
+test_ok: 
+                    LOAD      sE, test_val_ok
+                    OUT       sE, debug_id
+                    JUMP      test_ok
+
+; ;------------------------------------
+; ; Interrupt VECTOR
+; ;------------------------------------
+                    ORG       $3FF
+                    RETI      ENABLE

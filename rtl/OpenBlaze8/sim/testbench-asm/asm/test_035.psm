@@ -1,0 +1,106 @@
+; ;------------------------------------
+; ; Test 035
+; ; Instruction Test with register
+; ;------------------------------------
+
+; ;------------------------------------
+; ; directive compilation fichier
+; ;------------------------------------
+
+VHDL      "../ROM_blank_adh.vhd", "../../OpenBlaze8_ROM.vhd", "OpenBlaze8_ROM"
+
+; ;------------------------------------
+; ; Constantes
+; ;------------------------------------
+sp                  EQU       sF
+
+test_val_ok         EQU       $FA
+test_val_ko         EQU       $ED
+
+; ;------------------------------------
+; ; directives pour le simulateur:  definition des  E/S
+; ;------------------------------------
+switch_id           EQU       $00
+led_id              EQU       $20
+debug_id            EQU       $e0
+
+switch              DSIN      switch_id
+led                 DSOUT     led_id
+debug               DSOUT     debug_id
+
+; ;------------------------------------
+; ; MAIN
+; ;------------------------------------
+                    ORG       $000
+main: 
+                    LOAD      s0, $5A
+                    LOAD      s1, $0F
+                    LOAD      s2, $1F
+                    LOAD      s3, $FF
+                    LOAD      s4, $02
+                    LOAD      s5, $A5
+
+                    LOAD      s6, $58
+
+                    TEST      s0, s1
+                    JUMP      Z, test_ko
+                    JUMP      C, test_ko
+
+                    TEST      s0, s2
+                    JUMP      Z, test_ko
+                    JUMP      NC, test_ko
+
+                    TEST      s0, s3
+                    JUMP      Z, test_ko
+                    JUMP      C, test_ko
+
+                    TEST      s0, s4
+                    JUMP      Z, test_ko
+                    JUMP      NC, test_ko
+
+                    TEST      s0, s5
+                    JUMP      NZ, test_ko
+                    JUMP      C, test_ko
+
+
+                    TEST      s6, s1
+                    JUMP      Z, test_ko
+                    JUMP      NC, test_ko
+
+                    TEST      s6, s2
+                    JUMP      Z, test_ko
+                    JUMP      C, test_ko
+
+                    TEST      s6, s3
+                    JUMP      Z, test_ko
+                    JUMP      NC, test_ko
+
+                    TEST      s6, s4
+                    JUMP      NZ, test_ko
+                    JUMP      C, test_ko
+
+                    TEST      s6, s5
+                    JUMP      NZ, test_ko
+                    JUMP      C, test_ko
+
+                    JUMP      test_ok
+
+; ;------------------------------------
+; ; Test ok/ko
+; ;------------------------------------
+test_ko:
+                    LOAD      sE, test_val_ko
+                    OUT       sE, debug_id
+                    JUMP      test_ko
+
+                    ORG       $3FC
+test_ok: 
+                    LOAD      sE, test_val_ok
+                    OUT       sE, debug_id
+                    JUMP      test_ok
+
+; ;------------------------------------
+; ; Interrupt VECTOR
+; ;------------------------------------
+                    ORG       $3FF
+                    RETI      ENABLE
