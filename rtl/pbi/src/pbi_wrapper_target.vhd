@@ -6,7 +6,7 @@
 -- Author     : Mathieu Rosière
 -- Company    : 
 -- Created    : 2014-06-03
--- Last update: 2017-03-25
+-- Last update: 2017-03-30
 -- Platform   : 
 -- Standard   : VHDL'87
 -------------------------------------------------------------------------------
@@ -33,7 +33,8 @@ entity pbi_wrapper_target is
     SIZE_ADDR      : natural := 8;
     SIZE_DATA      : natural := 8;
     SIZE_ADDR_ID   : natural := 8;
-    SIZE_ADDR_IP   : natural := 0
+    SIZE_ADDR_IP   : natural := 0;
+    ID             : natural := std_logic_vector (SIZE_ADDR-1 downto 0) := (others => '0')
      );
   -- =====[ Interfaces ]==========================
   port (
@@ -52,15 +53,14 @@ entity pbi_wrapper_target is
     
     -- From Bus
     pbi_ini_i           : in    pbi_ini_t;
-    pbi_tgt_o           : out   pbi_tgt_t;
-    pbi_id_i            : in    std_logic_vector (SIZE_ADDR_ID-1 downto 0)
+    pbi_tgt_o           : out   pbi_tgt_t
     );
 end pbi_wrapper_target;
 
-architecture behavioral of pbi_wrapper_target is
+architecture rtl of pbi_wrapper_target is
   alias pbi_id          : std_logic_vector(SIZE_ADDR_ID-1 downto 0) is pbi_ini_i.addr(SIZE_ADDR-1 downto SIZE_ADDR-SIZE_ADDR_ID);
 
-begin  -- behavioral
+begin  -- rtl
 
   -----------------------------------------------------------------------------
   -- Check Parameters
@@ -70,7 +70,7 @@ begin  -- behavioral
   -----------------------------------------------------------------------------
   -- Chip Select
   -----------------------------------------------------------------------------
-  cs             <= '1' when (pbi_id = pbi_id_i) else
+  cs             <= '1' when (pbi_id = ID(pbi_id'range)) else
                     '0';
 
   -----------------------------------------------------------------------------
@@ -90,4 +90,4 @@ begin  -- behavioral
   ip_addr_o      <= pbi_ini_i.addr;
   ip_wdata_o     <= pbi_ini_i.wdata;
 
-end behavioral;
+end rtl;
