@@ -1,0 +1,65 @@
+
+# PlanAhead generated physical constraints 
+
+# clock pin for Basys2 Board
+NET "clk" LOC = "B8"; # Bank = 0, Signal name = MCLK
+NET "clk" CLOCK_DEDICATED_ROUTE = FALSE;
+
+# Pin assignment for SWs
+ NET "switch<0>" LOC = "P11";  # Bank = 2, Signal name = SW0
+ NET "switch<1>" LOC = "L3";  # Bank = 3, Signal name = SW1
+ NET "switch<2>" LOC = "K3";  # Bank = 3, Signal name = SW2
+ NET "switch<3>" LOC = "B4";  # Bank = 3, Signal name = SW3
+ NET "switch<4>" LOC = "G3";  # Bank = 3, Signal name = SW4
+ NET "switch<5>" LOC = "F3";  # Bank = 3, Signal name = SW5
+ NET "switch<6>" LOC = "E2";  # Bank = 3, Signal name = SW6
+ NET "switch<7>" LOC = "N3";  # Bank = 2, Signal name = SW7
+
+# Pin assignment for LEDs
+
+ NET "led<0>" LOC = "M5" ;  # Bank = 2, Signal name = LD0
+ NET "led<1>" LOC = "M11" ; # Bank = 2, Signal name = LD1
+ NET "led<2>" LOC = "P7" ; # Bank = 3, Signal name = LD2
+ NET "led<3>" LOC = "P6" ; # Bank = 2, Signal name = LD3
+ NET "led<4>" LOC = "N5" ;  # Bank = 2, Signal name = LD4
+ NET "led<5>" LOC = "N4" ;  # Bank = 2, Signal name = LD5
+ NET "led<6>" LOC = "P4" ; # Bank = 2, Signal name = LD6
+ NET "led<7>" LOC = "G1" ; # Bank = 3, Signal name = LD7
+
+# Pin assignment for BP
+ NET "reset"     LOC = "G12";          # Bank = 0, Signal name = BTN0
+ NET "button<0>" LOC = "C11" | PULLUP; # Bank = 2, Signal name = BTN1
+ NET "button<1>" LOC = "M4"  | PULLUP; # Bank = 0, Signal name = BTN2
+#NET "button<2>" LOC = "A7"  | PULLUP; # Bank = 1, Signal name = BTN3
+
+ NET "digit_select<3>" LOC = "K14"; #AN4
+ NET "digit_select<2>" LOC = "M13"; #AN3
+ NET "digit_select<1>" LOC = "J12"; #AN2
+ NET "digit_select<0>" LOC = "F12"; #AN1
+
+ NET "digit_value<0>" LOC = "L14"; #CA
+ NET "digit_value<1>" LOC = "H12"; #CB
+ NET "digit_value<2>" LOC = "N14"; #CC
+ NET "digit_value<3>" LOC = "N11"; #CD
+ NET "digit_value<4>" LOC = "P12"; #CE
+ NET "digit_value<5>" LOC = "L13"; #CF
+ NET "digit_value<6>" LOC = "M12"; #CG
+ NET "digit_value<7>" LOC = "N12"; #DP
+ 
+# Pin assignment for PS2
+ NET "PS2C"    LOC = "B1"   | DRIVE = 2  | PULLUP ; # Bank = 3, Signal name = PS2C
+ NET "PS2D"    LOC = "C3"   | DRIVE = 2  | PULLUP ; # Bank = 3, Signal name = PS2D
+
+# Pin assignment for VGA
+ NET "vga_HSYNC"   LOC = "J14"  | DRIVE = 2  | PULLUP ; # Bank = 1, Signal name = HSYNC
+ NET "vga_VSYNC"   LOC = "K13"  | DRIVE = 2  | PULLUP ; # Bank = 1, Signal name = VSYNC
+
+ NET "vga_Red<2>"    LOC = "F13"  | DRIVE = 2  | PULLUP ; # Bank = 1, Signal name = RED2
+ NET "vga_Red<1>"    LOC = "D13"  | DRIVE = 2  | PULLUP ; # Bank = 1, Signal name = RED1
+ NET "vga_Red<0>"    LOC = "C14"  | DRIVE = 2  | PULLUP ; # Bank = 1, Signal name = RED0
+ NET "vga_Green<2>"  LOC = "G14"  | DRIVE = 2  | PULLUP ; # Bank = 1, Signal name = GRN2
+ NET "vga_Green<1>"  LOC = "G13"  | DRIVE = 2  | PULLUP ; # Bank = 1, Signal name = GRN1 
+ NET "vga_Green<0>"  LOC = "F14"  | DRIVE = 2  | PULLUP ; # Bank = 1, Signal name = GRN0 
+ NET "vga_Blue<2>"   LOC = "J13"  | DRIVE = 2  | PULLUP ; # Bank = 1, Signal name = BLU2
+ NET "vga_Blue<1>"   LOC = "H13"  | DRIVE = 2  | PULLUP ; # Bank = 1, Signal name = BLU1  
+ 

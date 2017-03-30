@@ -1,0 +1,109 @@
+; ;------------------------------------
+; ; Test 027
+; ; CALL + RET Incondionnel imbtiqué
+; ;------------------------------------
+
+; ;------------------------------------
+; ; directive compilation fichier
+; ;------------------------------------
+
+VHDL      "../ROM_blank_adh.vhd", "../../OpenBlaze8_ROM.vhd", "OpenBlaze8_ROM"
+
+; ;------------------------------------
+; ; Constantes
+; ;------------------------------------
+sp                  EQU       sF
+
+test_val_ok         EQU       $FA
+test_val_ko         EQU       $ED
+
+; ;------------------------------------
+; ; directives pour le simulateur:  definition des  E/S
+; ;------------------------------------
+switch_id           EQU       $00
+led_id              EQU       $20
+debug_id            EQU       $e0
+
+switch              DSIN      switch_id
+led                 DSOUT     led_id
+debug               DSOUT     debug_id
+
+; ;------------------------------------
+; ; MAIN
+; ;------------------------------------
+                    ORG       $000
+main: 
+
+                    CALL      set_s0_89
+                    CALL      set_s1_76
+                    COMP      s0, $89
+                    JUMP      NZ, test_ko
+                    COMP      s1, $76
+                    JUMP      NZ, test_ko
+                    JUMP      test_ok
+
+set_s0_89: 
+                    LOAD      s0, $00
+                    CALL      set_s0_b0
+                    RET       
+                    JUMP      test_ko
+
+set_s1_76: 
+                    LOAD      s1, $FF
+                    CALL      unset_s1_b0
+                    RET       
+                    JUMP      test_ko
+
+set_s0_b0: 
+                    OR        s0, $01
+                    CALL      set_s0_b3
+                    RET       
+                    JUMP      test_ko
+
+set_s0_b3: 
+                    OR        s0, $08
+                    CALL      set_s0_b7
+                    RET       
+                    JUMP      test_ko
+
+set_s0_b7: 
+                    OR        s0, $80
+                    RET       
+                    JUMP      test_ko
+
+unset_s1_b0: 
+                    AND       s1, $FE
+                    CALL      unset_s1_b3
+                    RET       
+                    JUMP      test_ko
+
+unset_s1_b3: 
+                    AND       s1, $F7
+                    CALL      unset_s1_b7
+                    RET       
+                    JUMP      test_ko
+
+unset_s1_b7: 
+                    AND       s1, $7F
+                    RET       
+                    JUMP      test_ko
+
+; ;------------------------------------
+; ; Test ok/ko
+; ;------------------------------------
+test_ko:
+                    LOAD      sE, test_val_ko
+                    OUT       sE, debug_id
+                    JUMP      test_ko
+
+                    ORG       $3FC
+test_ok: 
+                    LOAD      sE, test_val_ok
+                    OUT       sE, debug_id
+                    JUMP      test_ok
+
+; ;------------------------------------
+; ; Interrupt VECTOR
+; ;------------------------------------
+                    ORG       $3FF
+                    RETI      ENABLE

@@ -1,0 +1,137 @@
+; ;------------------------------------
+; ; Test 018
+; ; Rotate left
+; ;------------------------------------
+
+; ;------------------------------------
+; ; directive compilation fichier
+; ;------------------------------------
+
+VHDL      "../ROM_blank_adh.vhd", "../../OpenBlaze8_ROM.vhd", "OpenBlaze8_ROM"
+
+; ;------------------------------------
+; ; Constantes
+; ;------------------------------------
+sp                  EQU       sF
+
+test_val_ok         EQU       $FA
+test_val_ko         EQU       $ED
+
+; ;------------------------------------
+; ; directives pour le simulateur:  definition des  E/S
+; ;------------------------------------
+switch_id           EQU       $00
+led_id              EQU       $20
+debug_id            EQU       $e0
+
+switch              DSIN      switch_id
+led                 DSOUT     led_id
+debug               DSOUT     debug_id
+
+; ;------------------------------------
+; ; MAIN
+; ;------------------------------------
+                    ORG       $000
+main: 
+                    LOAD      s0, $A5
+                    LOAD      s1, $00
+
+; RL
+                    LOAD      s9, s0
+
+                    RL        s9                  ; 10100101 -> 01001011
+                    JUMP      NC, test_ko
+                    JUMP      Z, test_ko
+
+                    COMP      s9, $4B
+                    JUMP      C, test_ko
+                    JUMP      NZ, test_ko
+
+                    RL        s9                  ; 01001011 -> 10010110
+                    JUMP      C, test_ko
+                    JUMP      Z, test_ko
+
+                    COMP      s9, $96
+                    JUMP      C, test_ko
+                    JUMP      NZ, test_ko
+
+                    RL        s9                  ; 10010110 -> 00101101
+                    JUMP      NC, test_ko
+                    JUMP      Z, test_ko
+
+                    COMP      s9, $2D
+                    JUMP      C, test_ko
+                    JUMP      NZ, test_ko
+
+                    RL        s9                  ; 00101101 -> 01011010
+                    JUMP      C, test_ko
+                    JUMP      Z, test_ko
+
+                    COMP      s9, $5A
+                    JUMP      C, test_ko
+                    JUMP      NZ, test_ko
+
+                    RL        s9                  ; 01011010 -> 10110100
+                    JUMP      C, test_ko
+                    JUMP      Z, test_ko
+
+                    COMP      s9, $B4
+                    JUMP      C, test_ko
+                    JUMP      NZ, test_ko
+
+                    RL        s9                  ; 10110100 -> 01101001
+                    JUMP      NC, test_ko
+                    JUMP      Z, test_ko
+
+                    COMP      s9, $69
+                    JUMP      C, test_ko
+                    JUMP      NZ, test_ko
+
+                    RL        s9                  ; 01101001 -> 11010010
+                    JUMP      C, test_ko
+                    JUMP      Z, test_ko
+
+                    COMP      s9, $D2
+                    JUMP      C, test_ko
+                    JUMP      NZ, test_ko
+
+                    RL        s9                  ; 11010010 -> 10100101
+                    JUMP      NC, test_ko
+                    JUMP      Z, test_ko
+
+                    COMP      s9, $A5
+                    JUMP      C, test_ko
+                    JUMP      NZ, test_ko
+
+                    LOAD      s9, s1
+                    RL        s9                  ; 00000000 -> 00000000
+                    JUMP      C, test_ko
+                    JUMP      NZ, test_ko
+
+                    COMP      s9, $00
+                    JUMP      C, test_ko
+                    JUMP      NZ, test_ko
+
+
+
+                    JUMP      test_ok
+
+; ;------------------------------------
+; ; Test ok/ko
+; ;------------------------------------
+test_ko:
+                    LOAD      sE, test_val_ko
+                    OUT       sE, debug_id
+                    JUMP      test_ko
+
+                    ORG       $3FC
+test_ok: 
+                    LOAD      sE, test_val_ok
+                    OUT       sE, debug_id
+                    JUMP      test_ok
+
+; ;------------------------------------
+; ; Interrupt VECTOR
+; ;------------------------------------
+                    ORG       $3FF
+                    RETI      ENABLE

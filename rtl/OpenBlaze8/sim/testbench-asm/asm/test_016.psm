@@ -1,0 +1,150 @@
+; ;------------------------------------
+; ; Test 016
+; ;------------------------------------
+
+; ;------------------------------------
+; ; directive compilation fichier
+; ;------------------------------------
+
+VHDL      "../ROM_blank_adh.vhd", "../../OpenBlaze8_ROM.vhd", "OpenBlaze8_ROM"
+
+; ;------------------------------------
+; ; Constantes
+; ;------------------------------------
+sp                  EQU       sF
+
+test_val_ok         EQU       $FA
+test_val_ko         EQU       $ED
+
+; ;------------------------------------
+; ; directives pour le simulateur:  definition des  E/S
+; ;------------------------------------
+switch_id           EQU       $00
+led_id              EQU       $20
+debug_id            EQU       $e0
+
+switch              DSIN      switch_id
+led                 DSOUT     led_id
+debug               DSOUT     debug_id
+
+; ;------------------------------------
+; ; MAIN
+; ;------------------------------------
+                    ORG       $000
+main: 
+
+                    LOAD      s0, $5A
+                    LOAD      s1, $3C
+                    LOAD      s2, $A5
+                    LOAD      s3, $C3
+                    LOAD      s4, $FF
+                    LOAD      s5, $01
+
+; -----------------
+                    COMP      s0, s0              ; compare $5A with $5A
+                    JUMP      C, test_ko
+                    JUMP      NZ, test_ko
+
+                    COMP      s0, s1              ; compare $5A with $3C
+                    JUMP      C, test_ko
+                    JUMP      Z, test_ko
+
+                    COMP      s0, s2              ; compare $5A with $A5
+                    JUMP      NC, test_ko
+                    JUMP      Z, test_ko
+
+                    COMP      s0, s3              ; compare $5A with $c3
+                    JUMP      NC, test_ko
+                    JUMP      Z, test_ko
+
+; -----------------
+                    COMP      s1, s0              ; compare $3C with $5A
+                    JUMP      NC, test_ko
+                    JUMP      Z, test_ko
+
+                    COMP      s1, s1              ; compare $3C with $3C
+                    JUMP      C, test_ko
+                    JUMP      NZ, test_ko
+
+                    COMP      s1, s2              ; compare $3C with $A5
+                    JUMP      NC, test_ko
+                    JUMP      Z, test_ko
+
+                    COMP      s1, s3              ; compare $3C with $c3
+                    JUMP      NC, test_ko
+                    JUMP      Z, test_ko
+
+; -----------------
+                    COMP      s2, s0              ; compare $a5 with $5A
+                    JUMP      C, test_ko
+                    JUMP      Z, test_ko
+
+                    COMP      s2, s1              ; compare $a5 with $3C
+                    JUMP      C, test_ko
+                    JUMP      Z, test_ko
+
+                    COMP      s2, s2              ; compare $a5 with $A5
+                    JUMP      C, test_ko
+                    JUMP      NZ, test_ko
+
+                    COMP      s2, s3              ; compare $a5 with $c3
+                    JUMP      NC, test_ko
+                    JUMP      Z, test_ko
+
+; -----------------
+                    COMP      s3, s0              ; compare $c3 with $5A
+                    JUMP      C, test_ko
+                    JUMP      Z, test_ko
+
+                    COMP      s3, s1              ; compare $c3 with $3C
+                    JUMP      C, test_ko
+                    JUMP      Z, test_ko
+
+                    COMP      s3, s2              ; compare $c3 with $A5
+                    JUMP      C, test_ko
+                    JUMP      Z, test_ko
+
+                    COMP      s3, s3              ; compare $c3 with $c3
+                    JUMP      C, test_ko
+                    JUMP      NZ, test_ko
+
+; -----------------
+                    COMP      s4, s4              ; compare $ff with $ff
+                    JUMP      C, test_ko
+                    JUMP      NZ, test_ko
+
+                    COMP      s4, s5              ; compare $ff with $01
+                    JUMP      C, test_ko
+                    JUMP      Z, test_ko
+
+; -----------------
+                    COMP      s5, s4              ; compare $01 with $ff
+                    JUMP      NC, test_ko
+                    JUMP      Z, test_ko
+
+                    COMP      s5, s5              ; compare $01 with $01
+                    JUMP      C, test_ko
+                    JUMP      NZ, test_ko
+
+
+                    JUMP      test_ok
+
+; ;------------------------------------
+; ; Test ok/ko
+; ;------------------------------------
+test_ko:
+                    LOAD      sE, test_val_ko
+                    OUT       sE, debug_id
+                    JUMP      test_ko
+
+                    ORG       $3FC
+test_ok: 
+                    LOAD      sE, test_val_ok
+                    OUT       sE, debug_id
+                    JUMP      test_ok
+
+; ;------------------------------------
+; ; Interrupt VECTOR
+; ;------------------------------------
+                    ORG       $3FF
+                    RETI      ENABLE

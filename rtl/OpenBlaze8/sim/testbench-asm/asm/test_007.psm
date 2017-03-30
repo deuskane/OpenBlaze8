@@ -1,0 +1,161 @@
+; ;------------------------------------
+; ; Test 007
+; ; Instruction OR
+; ; diff : flag z on res !
+; ;------------------------------------
+
+; ;------------------------------------
+; ; directive compilation fichier
+; ;------------------------------------
+
+VHDL      "../ROM_blank_adh.vhd", "../../OpenBlaze8_ROM.vhd", "OpenBlaze8_ROM"
+
+; ;------------------------------------
+; ; Constantes
+; ;------------------------------------
+sp                  EQU       sF
+
+test_val_ok         EQU       $FA
+test_val_ko         EQU       $ED
+
+; ;------------------------------------
+; ; directives pour le simulateur:  definition des  E/S
+; ;------------------------------------
+switch_id           EQU       $00
+led_id              EQU       $20
+debug_id            EQU       $e0
+
+switch              DSIN      switch_id
+led                 DSOUT     led_id
+debug               DSOUT     debug_id
+
+; ;------------------------------------
+; ; MAIN
+; ;------------------------------------
+                    ORG       $000
+main: 
+                    LOAD      s0, $A5
+                    LOAD      s1, $F0
+                    LOAD      s2, $0F
+                    LOAD      s3, $FF
+                    LOAD      s4, $5A
+                    LOAD      s5, $00
+
+                    LOAD      sA, s0              ; sA <- $A5
+                    OR        sA, s1              ; sA <- sA or $F0 <- $F5
+
+                    JUMP      NC, test01_ok
+                    JUMP      test_ko
+test01_ok: 
+                    JUMP      NZ, test02_ok
+                    JUMP      test_ko
+test02_ok: 
+                    COMP      sA, $F5
+                    JUMP      Z, test03_ok
+                    JUMP      test_ko
+test03_ok: 
+
+                    LOAD      sA, s0              ; sA <- $A5
+                    OR        sA, s2              ; sA <- sA or $0F <- $AF
+
+                    JUMP      NC, test11_ok
+                    JUMP      test_ko
+test11_ok: 
+                    JUMP      NZ, test12_ok
+                    JUMP      test_ko
+test12_ok: 
+                    COMP      sA, $AF
+                    JUMP      Z, test13_ok
+                    JUMP      test_ko
+test13_ok: 
+
+                    LOAD      sA, s0              ; sA <- $A5
+                    OR        sA, s3              ; sA <- sA or $FF <- $FF
+
+                    JUMP      NC, test21_ok
+                    JUMP      test_ko
+test21_ok: 
+                    JUMP      NZ, test22_ok
+                    JUMP      test_ko
+test22_ok: 
+                    COMP      sA, $FF
+                    JUMP      Z, test23_ok
+                    JUMP      test_ko
+test23_ok: 
+
+                    LOAD      sA, s0              ; sA <- $A5
+                    OR        sA, s4              ; sA <- sA or $5A <- $FF
+
+                    JUMP      NC, test31_ok
+                    JUMP      test_ko
+test31_ok: 
+                    JUMP      NZ, test32_ok
+                    JUMP      test_ko
+test32_ok: 
+                    COMP      sA, $FF
+                    JUMP      Z, test33_ok
+                    JUMP      test_ko
+test33_ok: 
+
+                    LOAD      sA, s0              ; sA <- $A5
+                    OR        sA, s5              ; sA <- sA or $00 <- $A5
+
+                    JUMP      NC, test41_ok
+                    JUMP      test_ko
+test41_ok: 
+                    JUMP      NZ, test42_ok
+                    JUMP      test_ko
+test42_ok: 
+                    COMP      sA, $A5
+                    JUMP      Z, test43_ok
+                    JUMP      test_ko
+test43_ok: 
+
+                    LOAD      sA, s5              ; sA <- $00
+                    OR        sA, s0              ; sA <- sA or $A5 <- $A5
+
+                    JUMP      NC, test51_ok
+                    JUMP      test_ko
+test51_ok: 
+                    JUMP      NZ, test52_ok
+                    JUMP      test_ko
+test52_ok: 
+                    COMP      sA, $A5
+                    JUMP      Z, test53_ok
+                    JUMP      test_ko
+test53_ok: 
+
+                    LOAD      sA, s5              ; sA <- $00
+                    OR        sA, s5              ; sA <- $00 or $00 <- $00
+
+                    JUMP      NC, test61_ok
+                    JUMP      test_ko
+test61_ok: 
+                    JUMP      Z, test62_ok
+                    JUMP      test_ko
+test62_ok: 
+                    COMP      sA, $00
+                    JUMP      Z, test63_ok
+                    JUMP      test_ko
+test63_ok: 
+                    JUMP      test_ok
+
+; ;------------------------------------
+; ; Test ok/ko
+; ;------------------------------------
+test_ko:
+                    LOAD      sE, test_val_ko
+                    OUT       sE, debug_id
+                    JUMP      test_ko
+
+                    ORG       $3FC
+test_ok: 
+                    LOAD      sE, test_val_ok
+                    OUT       sE, debug_id
+                    JUMP      test_ok
+
+; ;------------------------------------
+; ; Interrupt VECTOR
+; ;------------------------------------
+                    ORG       $3FF
+                    RETI      ENABLE
