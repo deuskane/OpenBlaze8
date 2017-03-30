@@ -1,0 +1,195 @@
+; ;------------------------------------
+; ; Test 000
+; ;
+; ;------------------------------------
+
+; ;------------------------------------
+; ; directive compilation fichier
+; ;------------------------------------
+
+                    VHDL      "../../../softwares/pBlazIDE374/ROM/ROM_blank_adh.vhd", "uart_senda.vhd", "OpenBlaze8_ROM"
+
+; ;------------------------------------
+; ; Constantes
+; ;------------------------------------
+sp                  EQU       sF
+
+; ;------------------------------------
+; ; directives pour le simulateur:  definition des  E/S
+; ;------------------------------------
+switch_id           EQU       $00
+led_id              EQU       $04
+uart_THR_RBR_id     EQU       $18
+uart_LCR_id         EQU       $1B
+uart_LSR_id         EQU       $1D
+uart_DLL_id         EQU       $18
+uart_DLM_id         EQU       $19
+
+switch              DSIN      switch_id
+led                 DSOUT     led_id
+uart_THR_RBR        DSOUT     uart_THR_RBR_id
+uart_LCR            DSIN      uart_LCR_id
+uart_LSR            DSIN      uart_LSR_id
+uart_DLL            DSIN      uart_DLL_id
+uart_DLM            DSIN      uart_DLM_id
+
+; ;------------------------------------
+; ; MAIN
+; ;------------------------------------
+                    ORG       $00
+main: 
+ 
+
+; ;UART Init (8bits word + DLAB=1)
+                    LOAD      s0, $83
+                    OUT       s0, uart_LCR_id
+; ;UART Init (SET BAUD_RATE to a random value)
+                    LOAD       s0, 6
+                    OUT        s0, uart_DLL_id
+                    LOAD       s0, 0
+                    OUT        s0, uart_DLM_id
+; ;UART Init (8bits word + DLAB=0)
+                    LOAD      s0, $03
+                    OUT       s0, uart_LCR_id
+
+                    JUMP      main_loop
+; ;Print Bonjour
+                    LOAD     s1, $42
+                    call     send_char
+                    CALL     wait_100ms
+                    
+                    LOAD     s1, $6F
+                    call     send_char
+                    CALL     wait_100ms
+
+                    LOAD     s1, $6E
+                    call     send_char
+                    CALL     wait_100ms
+
+                    LOAD     s1, $6A
+                    call     send_char
+                    CALL     wait_100ms
+
+                    LOAD     s1, $6F
+                    call     send_char
+                    CALL     wait_100ms
+
+                    LOAD     s1, $75
+                    call     send_char
+                    CALL     wait_100ms
+
+                    LOAD     s1, $72
+                    call     send_char
+                    CALL     wait_100ms
+
+                    LOAD     s1, $0A
+                    call     send_char
+                    CALL     wait_100ms
+
+                    LOAD     s1, $0D
+                    call     send_char
+                    CALL     wait_100ms
+
+main_loop:
+; ; Check if a char is available
+                    IN       s0, uart_LSR_id
+                    TEST     s0, $01
+                    JUMP     z, main_loop
+                    
+; ; Get the char
+                    IN       s0, uart_THR_RBR_id
+; ; Print it on the leds
+                    OUT      s0, led_id
+; ; Add 1 and send it back
+                    ADD      s0, $01
+                    OUT      s0, uart_THR_RBR_id
+
+ici:
+                    JUMP     main_loop
+
+; ;------------------------------------
+; ; send_char
+; ; arguments : thechar
+; ; results : none
+; ; Envois le char a la vitesse demandée
+; ;-------------------------------------
+send_char:
+; ; Wait for the TXEmpty
+wait_tx_empty:
+                    IN        s0, uart_LSR_id
+                    TEST      s0, $40
+                    JUMP      z, wait_tx_empty
+; ; Send the char in s0
+                    OUT       s1, uart_THR_RBR_id
+                    RET
+
+; ;------------------------------------
+; ; wait_100ms
+; ; arguments : none
+; ; results   : none
+; ; Attendre 100 ms
+; ;------------------------------------
+wait_100ms:
+; ;                 W = 6 + W0 + 7
+; ;                 W = 6 + 2 + N0*(2+W1) + 1 + 7
+; ;                 W = 16 + N0*(2+W1)
+; ;                 W = 16 + N0*(2 + 2 + N1*(2+W2) + 1)
+; ;                 W = 16 + N0*(5 + N1*(2+W2))
+; ;                 W = 16 + N0*(5 + N1*(2+ 2 + N2*2 + 1))
+; ;                 W = 16 + N0*(5 + N1*(5 + N2*2))
+; ;                 W = 16 + 5*N0 + 5*N0*N1 + 2*N0*N1*N2
+
+; ;					50 Mhz = 50 000 000 cycle/s
+; ;					   	   =  5 000 000 cycle/100ms
+; ; 					   =  2 500 000 inst/100ms
+; ;					N0 = 42
+; ; 				N1 = 119
+; ; 				N2 = 247
+
+; ;                 save
+                    STORE     s0, sF
+                    ADD       sF, 1
+                    STORE     s1, sF
+                    ADD       sF, 1
+                    STORE     s2, sF
+                    ADD       sF, 1
+
+; ;                 while1 : W0= 2 + N0*(2+W1) + 1
+                    LOAD      s0, 42
+                    JUMP      wait_100ms_while0
+wait_100ms_while0_body:
+; ;                 while1 : W1= 2 + N1*(2+W2) + 1
+                    LOAD      s1, 119
+                    JUMP      wait_100ms_while1
+wait_100ms_while1_body:
+
+; ;                 while2 : W2= 2 + N2*2 + 1
+                    LOAD      s2, 247
+                    JUMP      wait_100ms_while2
+wait_100ms_while2_body:
+                    SUB       s2, 1
+wait_100ms_while2:
+                    JUMP      NZ, wait_100ms_while2_body
+
+                    SUB       s1, 1
+wait_100ms_while1:
+                    JUMP      NZ, wait_100ms_while1_body
+
+                    SUB       s0, 1
+wait_100ms_while0:
+                    JUMP      NZ, wait_100ms_while0_body
+
+; ;                 restore
+                    SUB       sF, 1
+                    FETCH     s2, sF
+                    SUB       sF, 1
+                    FETCH     s1, sF
+                    SUB       sF, 1
+                    FETCH     s0, sF
+                    RET
+
+; ;------------------------------------
+; ; Interrupt VECTOR
+; ;------------------------------------
+                    ORG       $3FF
+                    RETI      ENABLE
