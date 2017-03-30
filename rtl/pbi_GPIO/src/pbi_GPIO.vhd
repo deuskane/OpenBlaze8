@@ -44,7 +44,10 @@ entity pbi_GPIO is
     pbi_tgt_o        : out   pbi_tgt_t;
     
     -- To/From IO
-    data_io          : inout std_logic_vector (NB_IO-1     downto 0);
+--  data_io          : inout std_logic_vector (NB_IO-1     downto 0);
+    data_i           : in    std_logic_vector (NB_IO-1     downto 0);
+    data_o           : out   std_logic_vector (NB_IO-1     downto 0);
+    data_oe_o        : out   std_logic_vector (NB_IO-1     downto 0);
 
     -- To/From IT Ctrl
     interrupt_o      : out   std_logic;
@@ -106,7 +109,10 @@ begin  -- architecture rtl
     wdata_i          => ip_wdata       ,
     rdata_o          => ip_rdata       ,
     busy_o           => ip_busy        ,
-    data_io          => data_io        ,
+--  data_io          => data_io        ,
+    data_i           => data_i         ,
+    data_o           => data_o         ,
+    data_oe_o        => data_oe_o      ,
     interrupt_o      => interrupt_o    ,
     interrupt_ack_i  => interrupt_ack_i
     );

@@ -54,8 +54,11 @@ entity GPIO is
     busy_o           : out   std_logic;
 
     -- To/From IO
-    data_io          : inout std_logic_vector (NB_IO-1     downto 0);
-
+--  data_io          : inout std_logic_vector (NB_IO-1     downto 0);
+    data_i           : in    std_logic_vector (NB_IO-1     downto 0);
+    data_o           : out   std_logic_vector (NB_IO-1     downto 0);
+    data_oe_o        : out   std_logic_vector (NB_IO-1     downto 0);
+    
     -- To/From IT Ctrl
     interrupt_o      : out   std_logic;
     interrupt_ack_i  : in    std_logic
@@ -97,15 +100,8 @@ begin
   -----------------------------------------------------------------------------
   -- Data I/O
   -----------------------------------------------------------------------------
-  gen_data_io_force_out_on: if IO_OUT_ONLY generate
-    data_io    <= data_out_r;
-  end generate gen_data_io_force_out_on;
-  
-  gen_data_io_force_off: if not DATA_OE_FORCE generate
-  gen_data_io: for i in NB_IO-1 downto 0 generate
-    data_io(i) <= data_out_r(i) when data_oe(i) = '1' else 'Z';
-  end generate gen_data_io;
-  end generate gen_data_io_force_off;
+  data_o     <= data_out_r;
+  data_oe_o  <= (others => '1');
   
   -----------------------------------------------------------------------------
   -- IP Output
@@ -119,9 +115,7 @@ begin
   gen_rdata_force_out_off: if not IO_OUT_ONLY generate
 --rdata_o  <= data_in_r when (addr_i = addr_read_data) else
 --                (others => '0');
-
-  rdata_o  <= (rdata_o'range => data_in_r -- Only one read register
-              ,others => '0');
+  rdata_o <= std_logic_vector(resize(unsigned(data_in_r), rdata_o'length));
   end generate gen_rdata_force_out_off;
     
   -----------------------------------------------------------------------------
@@ -186,7 +180,7 @@ begin
   begin 
     if rising_edge(clk_i)
     then  -- rising clock edge
-      data_in_r <= data_io;
+      data_in_r <= data_i;
     end if;
   end process;
 

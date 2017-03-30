@@ -60,7 +60,8 @@ end pbi_wrapper_target;
 architecture rtl of pbi_wrapper_target is
   constant SIZE_ADDR_ID : natural := PBI_ADDR_WIDTH-SIZE_ADDR_IP;
   
-  alias pbi_id          : std_logic_vector(SIZE_ADDR_ID-1 downto 0) is pbi_ini_i.addr(PBI_ADDR_WIDTH-1 downto SIZE_ADDR_IP);
+  alias pbi_id         : std_logic_vector(SIZE_ADDR_ID-1 downto 0) is pbi_ini_i.addr(PBI_ADDR_WIDTH-1 downto SIZE_ADDR_IP);
+  alias tgt_id         : std_logic_vector(SIZE_ADDR_ID-1 downto 0) is ID            (PBI_ADDR_WIDTH-1 downto SIZE_ADDR_IP);
 
   signal cs             : std_logic;
   
@@ -69,12 +70,12 @@ begin  -- rtl
   -----------------------------------------------------------------------------
   -- Check Parameters
   -----------------------------------------------------------------------------
-  assert SIZE_ADDR_IP>PBI_ADDR_WIDTH report "Invalid value at the parameter 'SIZE_ADDR_IP'" severity FAILURE;
+--  assert SIZE_ADDR_IP>PBI_ADDR_WIDTH report "Invalid value at the parameter 'SIZE_ADDR_IP'" severity FAILURE;
   
   -----------------------------------------------------------------------------
   -- Chip Select
   -----------------------------------------------------------------------------
-  cs             <= '1' when (pbi_id = ID(pbi_id'range)) else
+  cs             <= '1' when (pbi_id = tgt_id) else
                     '0';
 
   -----------------------------------------------------------------------------
