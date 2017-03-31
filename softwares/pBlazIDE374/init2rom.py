@@ -4,8 +4,10 @@ import re
 
 rom_fname   = sys.argv[1]
 fd_init     = open(rom_fname,'r')
-rom_name    = rom_fname.split('.')[0]
-fd_result   = open("{0}_switch.vhd".format(rom_name),'w')
+#rom_name    = rom_fname.split('.')[0]
+#fd_result   = open("{0}_switch.vhd".format(rom_name),'w')
+rom_name    = "OpenBlaze8_ROM"
+fd_result   = open("{0}.vhd".format(rom_name),'w')
 
 init_data = ""
 initp_data = ""
@@ -42,7 +44,7 @@ print("    data_o   : out std_logic_vector(17 downto 0)",file=fd_result)
 print("  );",file=fd_result)
 print("end {0} ;".format(rom_name),file=fd_result)
 print("",file=fd_result)
-print("architecture behavioral of {0} is".format(rom_name),file=fd_result)
+print("architecture rtl of {0} is".format(rom_name),file=fd_result)
 print("begin",file=fd_result)
 print("  read : process(clk_i)",file=fd_result)
 print("  begin",file=fd_result)
@@ -63,7 +65,7 @@ print("      end case;",file=fd_result)
 print("    end if;",file=fd_result)
 print("  end process;",file=fd_result)
 
-print("end behavioral;",file=fd_result)
+print("end rtl;",file=fd_result)
 
 
 

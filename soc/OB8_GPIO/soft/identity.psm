@@ -7,7 +7,7 @@
 ; ; directive compilation fichier
 ; ;------------------------------------
 
-                    VHDL      "../../../softwares/pBlazIDE374/ROM/ROM_blank_adh.vhd", "../src/identity.vhd", "OpenBlaze8_ROM"
+                    VHDL      "../../../softwares/pBlazIDE374/ROM/ROM_blank_adh.vhd", "identity.vhd", "OpenBlaze8_ROM"
 
 ; ;------------------------------------
 ; ; Constantes

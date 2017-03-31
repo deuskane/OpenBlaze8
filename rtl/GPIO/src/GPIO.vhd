@@ -6,7 +6,7 @@
 -- Author     : Mathieu Rosiere
 -- Company    : 
 -- Created    : 2013-12-26
--- Last update: 2017-03-30
+-- Last update: 2017-03-31
 -- Platform   : 
 -- Standard   : VHDL'87
 -------------------------------------------------------------------------------
@@ -84,9 +84,9 @@ architecture rtl of GPIO is
   -----------------------------------------------------------------------------
   -- Address
   -----------------------------------------------------------------------------
-  constant addr_read_data   : std_logic_vector(SIZE_ADDR-1 downto 0) := std_logic_vector(to_unsigned(0, SIZE_ADDR));
-  constant addr_write_data  : std_logic_vector(SIZE_ADDR-1 downto 0) := std_logic_vector(to_unsigned(0, SIZE_ADDR));
-  constant addr_write_cfg   : std_logic_vector(SIZE_ADDR-1 downto 0) := std_logic_vector(to_unsigned(1, SIZE_ADDR));
+  constant raddr_data       : std_logic_vector(SIZE_ADDR-1 downto 0) := std_logic_vector(to_unsigned(0, SIZE_ADDR));
+  constant waddr_data       : std_logic_vector(SIZE_ADDR-1 downto 0) := std_logic_vector(to_unsigned(0, SIZE_ADDR));
+  constant waddr_cfg        : std_logic_vector(SIZE_ADDR-1 downto 0) := std_logic_vector(to_unsigned(1, SIZE_ADDR));
 
   -----------------------------------------------------------------------------
   -- Register
@@ -95,6 +95,10 @@ architecture rtl of GPIO is
   signal   data_out_r       : std_logic_vector(NB_IO-1 downto 0);
   signal   data_in_r        : std_logic_vector(NB_IO-1 downto 0);
   signal   data_oe_r        : std_logic_vector(NB_IO-1 downto 0);
+
+  -----------------------------------------------------------------------------
+  -- Signal
+  -----------------------------------------------------------------------------
   signal   data_oe          : std_logic_vector(NB_IO-1 downto 0);
 begin
   -----------------------------------------------------------------------------
@@ -113,7 +117,7 @@ begin
   end generate gen_rdata_force_out_on;
 
   gen_rdata_force_out_off: if not IO_OUT_ONLY generate
---rdata_o  <= data_in_r when (addr_i = addr_read_data) else
+--rdata_o  <= data_in_r when (addr_i = raddr_data) else
 --                (others => '0');
   rdata_o <= std_logic_vector(resize(unsigned(data_in_r), rdata_o'length));
   end generate gen_rdata_force_out_off;
@@ -139,7 +143,7 @@ begin
         then
           if (cs_i = '1' and we_i = '1')
           then
-            if (addr_i = addr_write_cfg)
+            if (addr_i = waddr_cfg)
             then
               data_oe_r <= wdata_i(NB_IO-1 downto 0);
             end if;
@@ -164,7 +168,7 @@ begin
       then
         if (cs_i = '1' and we_i = '1')
         then
-          if (addr_i = addr_write_data)
+          if (addr_i = waddr_data)
           then
             data_out_r <= wdata_i(NB_IO-1 downto 0);
           end if;
