@@ -6,7 +6,7 @@
 -- Author     : Mathieu Rosiere
 -- Company    : 
 -- Created    : 2017-03-30
--- Last update: 2017-03-30
+-- Last update: 2017-03-31
 -- Platform   : 
 -- Standard   : VHDL'93/02
 -------------------------------------------------------------------------------
@@ -44,6 +44,11 @@ architecture rtl of OB8_GPIO is
   constant OPENBLAZE8_REGFILE_DEPTH   : natural := 16;
   constant OPENBLAZE8_MULTI_CYCLE     : natural := 1;
   
+  constant ID_SWITCH                  : std_logic_vector (PBI_ADDR_WIDTH-1 downto 0) := "00000000";
+  --                                                                                    "00000011"
+  constant ID_LED                     : std_logic_vector (PBI_ADDR_WIDTH-1 downto 0) := "00000100";
+  --                                                                                    "00000011"
+
   signal iaddr                        : std_logic_vector(OPENBLAZE8_ADDR_INST_WIDTH-1 downto 0);
   signal idata                        : std_logic_vector(17 downto 0);
   signal pbi_ini                      : pbi_ini_t;
@@ -91,7 +96,7 @@ begin  -- architecture rtl
     DATA_OE_INIT     => false,
     DATA_OE_FORCE    => true ,
     IT_ENABLE        => false, -- GPIO can generate interruption
-    ID               => "00000000"
+    ID               => ID_SWITCH
     )
   port map  (
     clk_i            => clk_i         ,
@@ -112,7 +117,7 @@ begin  -- architecture rtl
     DATA_OE_INIT     => true ,
     DATA_OE_FORCE    => true ,
     IT_ENABLE        => false, -- GPIO can generate interruption
-    ID               => "00000100"
+    ID               => ID_LED
     )
   port map  (
     clk_i            => clk_i      ,

@@ -6,7 +6,7 @@
 -- Author     : mrosiere
 -- Company    : 
 -- Created    : 2014-05-20
--- Last update: 2016-11-20
+-- Last update: 2017-03-31
 -- Platform   : 
 -- Standard   : VHDL'87
 -------------------------------------------------------------------------------
@@ -169,7 +169,6 @@ begin  -- rtl
 --                alu_op1(size_data downto 1);
 
   res_for_zero <= res;
-
   
   p_test_zero: process (res_for_zero)
     variable zero : std_logic;
@@ -204,12 +203,12 @@ begin  -- rtl
 --            '0'                       -- and,or,xor
 --            ;
 
-flag_c_o <= res_arith(size_data+1)   when alu_op_flag_c_i = "01" else  -- add/addcy/sub/subcy
-            test_odd                 when alu_op_flag_c_i = "11" else  -- test
-            res_rotate_shift_bit_out when alu_op_flag_c_i = "10" else  -- rotate/shift
-            '0'                       -- and,or,xor
-            ;
+  flag_c_o <= res_arith(size_data+1)   when alu_op_flag_c_i = "01" else  -- add/addcy/sub/subcy
+              test_odd                 when alu_op_flag_c_i = "11" else  -- test
+              res_rotate_shift_bit_out when alu_op_flag_c_i = "10" else  -- rotate/shift
+              '0'                       -- and,or,xor
+              ;
   
   flag_z_o <= test_zero   -- add/addcy/sub/subcy/and,or,xor,test
-                ;
+              ;
 end rtl;
