@@ -1,0 +1,208 @@
+; ;------------------------------------
+; ; Test 000
+; ;
+; ;------------------------------------
+
+; ;------------------------------------
+; ; directive compilation fichier
+; ;------------------------------------
+
+                    VHDL      "../../../softwares/pBlazIDE374/ROM/ROM_blank_adh.vhd", "color.vhd", "OpenBlaze8_ROM"
+
+; ;------------------------------------
+; ; Constantes
+; ;------------------------------------
+sp                  EQU       sF
+
+; ;------------------------------------
+; ; directives pour le simulateur:  definition des  E/S
+; ;------------------------------------
+switch_id           EQU       $00
+led_id              EQU       $04
+vga_id              EQU       $08
+uart_id             EQU       $18
+
+switch              DSIN      switch_id
+led                 DSOUT     led_id
+vga_config          DSOUT     vga_id + 0
+vga_color           DSOUT     vga_id + 1
+vga_txt             DSOUT     vga_id + 2
+uart_THR_DLL        DSOUT     uart_id + 0
+uart_RBR_DLL        DSIN      uart_id + 0
+uart_LCR            DSOUT     uart_id + 3
+uart_LSR            DSIN      uart_id + 5
+uart_DLM            DSOUT     uart_id + 1
+
+; ;------------------------------------
+; ; MAIN
+; ;------------------------------------
+                    ORG       $00
+main: 
+main_uart_init: 
+; ;                 UART INIT
+; ;                 (8bits word + DLAB=1)
+                    LOAD      s0, $83
+                    OUT       s0, uart_LCR
+; ;                 (SET BAUD_RATE to a random value)
+                    LOAD      s0, 6
+                    OUT       s0, uart_THR_DLL
+                    LOAD      s0, 0
+                    OUT       s0, uart_DLM
+; ;                 (8bits word + DLAB=0)
+                    LOAD      s0, $03
+                    OUT       s0, uart_LCR
+
+
+main_vga_init: 
+; ;                 VGA Init
+; ;                 Text Mode
+                    LOAD      s0, 0
+                    OUT       s0, vga_config
+; ;                 Color : background red, foreground blue
+                    LOAD      s0, $41
+                    OUT       s0, vga_color
+
+main_body: 
+                    LOAD      s0, 'H'
+                    CALL      echo
+                    LOAD      s0, 'e'
+                    CALL      echo
+                    LOAD      s0, 'l'
+                    CALL      echo
+                    LOAD      s0, 'l'
+                    CALL      echo
+                    LOAD      s0, 'o'
+                    CALL      echo
+
+main_body_loop: 
+                    CALL      receive_char
+                    CALL      echo
+
+                    JUMP      main_body_loop
+
+
+; ;------------------------------------
+; ; echo
+; ; arguments : s0 (thechar)
+; ; results : none
+; ; envoie le char sur le vga et sur l'uart
+; ;-------------------------------------
+echo: 
+                    LOAD      s0, led
+                    CALL      print_char
+                    CALL      send_char
+                    RET       
+
+
+; ;------------------------------------
+; ; send_char
+; ; arguments : s0 (thechar)
+; ; results : none
+; ; Envois le char a la vitesse demandée
+; ;-------------------------------------
+send_char: 
+; ;                 Wait for the TXEmpty
+wait_tx_empty: 
+                    IN        s0, uart_LSR
+                    TEST      s0, $40
+                    JUMP      Z, wait_tx_empty
+; ;                 Send the char in s0
+                    OUT       s1, uart_THR_DLL
+                    CALL      wait_100ms
+                    RET       
+
+; ;------------------------------------
+; ; receive_char
+; ; arguments : none
+; ; results : s0 (char receive)
+; ; Recoi un char, function bloquante
+; ;-------------------------------------
+receive_char: 
+; ;                 Check if a char is available
+                    IN        s0, uart_LSR
+                    TEST      s0, $01
+                    JUMP      Z, receive_char
+
+; ;                 Get the char
+                    IN        s0, uart_RBR_DLL
+                    RET       
+
+; ;------------------------------------
+; ; print_char
+; ; arguments : s0 (thechar)
+; ; results : none
+; ; Envois le char a la vitesse demandée
+; ;-------------------------------------
+print_char: 
+                    OUT       s0, vga_txt
+                    RET       
+; ;------------------------------------
+; ; wait_100ms
+; ; arguments : none
+; ; results   : none
+; ; Attendre 100 ms
+; ;------------------------------------
+wait_100ms: 
+; ;                 W = 6 + W0 + 7
+; ;                 W = 6 + 2 + N0*(2+W1) + 1 + 7
+; ;                 W = 16 + N0*(2+W1)
+; ;                 W = 16 + N0*(2 + 2 + N1*(2+W2) + 1)
+; ;                 W = 16 + N0*(5 + N1*(2+W2))
+; ;                 W = 16 + N0*(5 + N1*(2+ 2 + N2*2 + 1))
+; ;                 W = 16 + N0*(5 + N1*(5 + N2*2))
+; ;                 W = 16 + 5*N0 + 5*N0*N1 + 2*N0*N1*N2
+
+; ;					50 Mhz = 50 000 000 cycle/s
+; ;					   	   =  5 000 000 cycle/100ms
+; ; 					   =  2 500 000 inst/100ms
+; ;					N0 = 42
+; ; 				N1 = 119
+; ; 				N2 = 247
+
+; ;                 save
+                    STORE     s0, sF
+                    ADD       sF, 1
+                    STORE     s1, sF
+                    ADD       sF, 1
+                    STORE     s2, sF
+                    ADD       sF, 1
+
+; ;                 while1 : W0= 2 + N0*(2+W1) + 1
+                    LOAD      s0, 42
+                    JUMP      wait_100ms_while0
+wait_100ms_while0_body: 
+; ;                 while1 : W1= 2 + N1*(2+W2) + 1
+                    LOAD      s1, 119
+                    JUMP      wait_100ms_while1
+wait_100ms_while1_body: 
+
+; ;                 while2 : W2= 2 + N2*2 + 1
+                    LOAD      s2, 247
+                    JUMP      wait_100ms_while2
+wait_100ms_while2_body: 
+                    SUB       s2, 1
+wait_100ms_while2: 
+                    JUMP      NZ, wait_100ms_while2_body
+
+                    SUB       s1, 1
+wait_100ms_while1: 
+                    JUMP      NZ, wait_100ms_while1_body
+
+                    SUB       s0, 1
+wait_100ms_while0: 
+                    JUMP      NZ, wait_100ms_while0_body
+
+; ;                 restore
+                    SUB       sF, 1
+                    FETCH     s2, sF
+                    SUB       sF, 1
+                    FETCH     s1, sF
+                    SUB       sF, 1
+                    FETCH     s0, sF
+                    RET       
+
+; ;------------------------------------
+; ; Interrupt VECTOR
+; ;------------------------------------
+                    ORG       $3FF
+                    RETI      ENABLE

@@ -24,8 +24,6 @@ library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.numeric_std.ALL;
 
---use work.nxpPackage.all;
-
 entity clock_divider is
     generic(ratio        : positive := 2
             );
@@ -57,13 +55,13 @@ begin
     end if;
   end process;
 
-  clk_div_o <= clock_div;
-  --ins_gated_clock : NXP_CKS
-  --  port map (
-  --    CKI => clk_i,
-  --    CMD => clock_div,
-  --    CKO => clk_div_o
-  --    );
+  --clk_div_o <= clock_div;
+  ins_gated_clock : entity work.gated_clock(rtl)
+    port map (
+      clk_i       => clk_i,
+      cmd_i       => clock_div,
+      clk_gated_o => clk_div_o
+      );
   
 end rtl;
 
