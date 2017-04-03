@@ -94,16 +94,17 @@ architecture rtl of uart_wrapper is
 	signal reset : std_logic;
 	signal s_clk : std_logic;
 --	signal clk_div: std_logic_vector(log2(CLK_DIV_MAX) downto 0);
-
+  signal cs : std_logic;
 begin
 
+	cs <= cs_i and (re_i or we_i);
 	-- Main UART instance
 	gh_uart : gh_uart_16550
 		port map(
 			clk     => clk_i,
 			BR_clk  => s_clk,
 			rst     => reset,
-			CS      => cs_i,
+			CS      => cs,
 			WR      => we_i,
 			ADD     => addr_i,
 			D       => wdata_i,
