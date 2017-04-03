@@ -6,7 +6,7 @@
 -- Author     : Mathieu Rosiere
 -- Company    : 
 -- Created    : 2017-03-30
--- Last update: 2017-03-31
+-- Last update: 2017-04-03
 -- Platform   : 
 -- Standard   : VHDL'93/02
 -------------------------------------------------------------------------------
@@ -48,7 +48,8 @@ entity OB8_SOC is
 end OB8_SOC;
 
 architecture rtl of OB8_SOC is
-  constant FSYS                       : positive:= 50_000_000;
+  constant FSYS                       : positive:= 25_000_000;
+  constant FSYS_INT                   : positive:= 25_000_000;
   constant OPENBLAZE8_STACK_DEPTH     : natural := 32;
   constant OPENBLAZE8_RAM_DEPTH       : natural := 64;
   constant OPENBLAZE8_DATA_WIDTH      : natural := 8;
@@ -65,6 +66,8 @@ architecture rtl of OB8_SOC is
   constant ID_UART                    : std_logic_vector (PBI_ADDR_WIDTH-1 downto 0) := "00011000";
   --                                                                                    "00000111"
   
+  signal clk                          : std_logic;
+
   signal iaddr                        : std_logic_vector(OPENBLAZE8_ADDR_INST_WIDTH-1 downto 0);
   signal idata                        : std_logic_vector(17 downto 0);
   signal pbi_ini                      : pbi_ini_t;
@@ -80,6 +83,16 @@ architecture rtl of OB8_SOC is
   
 begin  -- architecture rtl
 
+  ins_clock_divider : entity work.clock_divider(rtl)
+    generic map(
+      RATIO            => FSYS/FSYS_INT
+      )
+    port map (
+      clk_i            => clk_i  ,
+      arstn_i          => arstn_i,
+      clk_div_o        => clk
+      );
+  
   ins_pbi_OpenBlaze8 : entity work.pbi_OpenBlaze8(rtl)
     generic map(
       STACK_DEPTH     => OPENBLAZE8_STACK_DEPTH    ,
@@ -90,7 +103,7 @@ begin  -- architecture rtl
       MULTI_CYCLE     => OPENBLAZE8_MULTI_CYCLE
       )
     port map (
-      clk_i            => clk_i  ,
+      clk_i            => clk    ,
       cke_i            => '1'    ,
       arstn_i          => arstn_i,
       iaddr_o          => iaddr  ,
@@ -113,7 +126,7 @@ begin  -- architecture rtl
 
   ins_pbi_OpenBlaze8_ROM : entity work.OpenBlaze8_ROM(rtl)
     port map (
-      clk_i            => clk_i  ,
+      clk_i            => clk    ,
       addr_i           => iaddr  ,
       data_o           => idata  
       );
@@ -127,7 +140,7 @@ begin  -- architecture rtl
       ID               => ID_SWITCH
       )
     port map  (
-      clk_i            => clk_i         ,
+      clk_i            => clk           ,
       cke_i            => '1'           ,
       arstn_i          => arstn_i       ,
       pbi_ini_i        => pbi_ini       ,
@@ -148,7 +161,7 @@ begin  -- architecture rtl
       ID               => ID_LED
       )
     port map  (
-      clk_i            => clk_i      ,
+      clk_i            => clk        ,
       cke_i            => '1'        ,
       arstn_i          => arstn_i    ,
       pbi_ini_i        => pbi_ini    ,
@@ -162,11 +175,11 @@ begin  -- architecture rtl
 
   ins_pbi_vga_controller : entity work.pbi_vga_controller(rtl)
     generic map(
-      FSYS             => FSYS      ,
+      FSYS             => FSYS_INT  ,
       ID               => ID_VGA
       )
     port  map(
-      clk_i            => clk_i      ,
+      clk_i            => clk        ,
       cke_i            => '1'        ,
       arstn_i          => arstn_i    ,
       pbi_ini_i        => pbi_ini    ,
@@ -184,12 +197,12 @@ begin  -- architecture rtl
 
   ins_pbi_uart : entity work.pbi_uart(rtl)
     generic map(
-      UART_BASE_FREQ  => FSYS,
+      UART_BASE_FREQ  => FSYS_INT,
       IT_ENABLE       => false,
       ID              => ID_UART
       )
     port map  (
-      clk_i           => clk_i,
+      clk_i           => clk,
       cke_i           => '1',
       arstn_i         => arstn_i,
       pbi_ini_i       => pbi_ini,

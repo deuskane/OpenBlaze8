@@ -43,7 +43,7 @@ entity OB8_VGA is
 end OB8_VGA;
 
 architecture rtl of OB8_VGA is 
-  constant FSYS                       : positive:= 50_000_000;
+  constant FSYS                       : positive:= 25_000_000;
   constant FSYS_INT                   : positive:= 25_000_000;
   constant OPENBLAZE8_STACK_DEPTH     : natural := 32;
   constant OPENBLAZE8_RAM_DEPTH       : natural := 64;

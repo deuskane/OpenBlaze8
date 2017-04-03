@@ -6,7 +6,7 @@
 -- Author     : Mathieu Rosiere
 -- Company    : 
 -- Created    : 2017-03-30
--- Last update: 2017-03-31
+-- Last update: 2017-04-03
 -- Platform   : 
 -- Standard   : VHDL'93/02
 -------------------------------------------------------------------------------
@@ -37,6 +37,9 @@ entity OB8_GPIO is
 end OB8_GPIO;
 
 architecture rtl of OB8_GPIO is
+  constant FSYS                       : positive:= 50_000_000;
+  constant FSYS_INT                   : positive:= 50_000_000;
+
   constant OPENBLAZE8_STACK_DEPTH     : natural := 32;
   constant OPENBLAZE8_RAM_DEPTH       : natural := 64;
   constant OPENBLAZE8_DATA_WIDTH      : natural := 8;
@@ -49,6 +52,8 @@ architecture rtl of OB8_GPIO is
   constant ID_LED                     : std_logic_vector (PBI_ADDR_WIDTH-1 downto 0) := "00000100";
   --                                                                                    "00000011"
 
+  signal clk                          : std_logic;
+
   signal iaddr                        : std_logic_vector(OPENBLAZE8_ADDR_INST_WIDTH-1 downto 0);
   signal idata                        : std_logic_vector(17 downto 0);
   signal pbi_ini                      : pbi_ini_t;
@@ -57,6 +62,15 @@ architecture rtl of OB8_GPIO is
   signal pbi_tgt_led                  : pbi_tgt_t;
 
 begin  -- architecture rtl
+  ins_clock_divider : entity work.clock_divider(rtl)
+    generic map(
+      RATIO            => FSYS/FSYS_INT
+      )
+    port map (
+      clk_i            => clk_i  ,
+      arstn_i          => arstn_i,
+      clk_div_o        => clk
+      );
 
   ins_pbi_OpenBlaze8 : entity work.pbi_OpenBlaze8(rtl)
   generic map(
@@ -68,7 +82,7 @@ begin  -- architecture rtl
      MULTI_CYCLE     => OPENBLAZE8_MULTI_CYCLE
      )
   port map (
-    clk_i            => clk_i  ,
+    clk_i            => clk    ,
     cke_i            => '1'    ,
     arstn_i          => arstn_i,
     iaddr_o          => iaddr  ,
@@ -80,12 +94,14 @@ begin  -- architecture rtl
     debug_o          => open   
     );
 
-  pbi_tgt.rdata <= pbi_tgt_switch.rdata or pbi_tgt_led.rdata;
-  pbi_tgt.busy  <= pbi_tgt_switch.busy  or pbi_tgt_led.busy;
+  pbi_tgt.rdata <= pbi_tgt_switch.rdata or
+                   pbi_tgt_led   .rdata;
+  pbi_tgt.busy  <= pbi_tgt_switch.busy  or
+                   pbi_tgt_led   .busy;
 
   ins_pbi_OpenBlaze8_ROM : entity work.OpenBlaze8_ROM(rtl)
     port map (
-      clk_i            => clk_i  ,
+      clk_i            => clk    ,
       addr_i           => iaddr  ,
       data_o           => idata  
     );
@@ -99,7 +115,7 @@ begin  -- architecture rtl
     ID               => ID_SWITCH
     )
   port map  (
-    clk_i            => clk_i         ,
+    clk_i            => clk           ,
     cke_i            => '1'           ,
     arstn_i          => arstn_i       ,
     pbi_ini_i        => pbi_ini       ,
@@ -120,7 +136,7 @@ begin  -- architecture rtl
     ID               => ID_LED
     )
   port map  (
-    clk_i            => clk_i      ,
+    clk_i            => clk        ,
     cke_i            => '1'        ,
     arstn_i          => arstn_i    ,
     pbi_ini_i        => pbi_ini    ,

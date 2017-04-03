@@ -33,7 +33,7 @@ entity clock_divider is
 end clock_divider;
 
 architecture rtl of clock_divider is
-  signal clock_count : integer range 0 to RATIO-1;
+  signal clock_count : natural range 0 to RATIO-1;
   signal clock_div   : std_logic;
 begin
 
@@ -60,7 +60,7 @@ begin
     end if;
   end process;
 
-  --clk_div_o <= clock_div;
+--clk_div_o <= clock_div;
   ins_gated_clock : entity work.gated_clock(rtl)
     port map (
       clk_i       => clk_i,
