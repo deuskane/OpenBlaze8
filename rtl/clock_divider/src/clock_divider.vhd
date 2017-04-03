@@ -6,7 +6,7 @@
 -- Author     : Mathieu Rosière
 -- Company    : 
 -- Created    : 2013-12-26
--- Last update: 2017-03-31
+-- Last update: 2017-04-03
 -- Platform   : 
 -- Standard   : VHDL'87
 -------------------------------------------------------------------------------
@@ -25,7 +25,7 @@ use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.numeric_std.ALL;
 
 entity clock_divider is
-    generic(ratio        : positive := 2
+    generic(RATIO        : positive := 2
             );
     port   (clk_i        : in  std_logic;
             arstn_i      : in  std_logic;
@@ -33,10 +33,15 @@ entity clock_divider is
 end clock_divider;
 
 architecture rtl of clock_divider is
-  signal clock_count : integer range 0 to ratio-1;
+  signal clock_count : integer range 0 to RATIO-1;
   signal clock_div   : std_logic;
 begin
 
+  gen_ratio_eq_1: if RATIO=1 generate
+  clk_div_o <= clk_i;
+  end generate gen_ratio_eq_1;
+
+  gen_ratio_gt_1: if RATIO > 1 generate
   process(arstn_i,clk_i)
   begin 
     if arstn_i='0' then
@@ -45,7 +50,7 @@ begin
     elsif rising_edge(clk_i) then
 
       -- decrease clock diviser
-      if (clock_count = ratio-1) then
+      if (clock_count = RATIO-1) then
         clock_count <= 0;
         clock_div   <= '1';
       else
@@ -62,6 +67,6 @@ begin
       cmd_i       => clock_div,
       clk_gated_o => clk_div_o
       );
-  
+  end generate gen_ratio_gt_1;
 end rtl;
 

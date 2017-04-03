@@ -6,7 +6,7 @@
 -- Author     : Mathieu Rosiere
 -- Company    : 
 -- Created    : 2013-12-26
--- Last update: 2017-03-31
+-- Last update: 2017-04-03
 -- Platform   : 
 -- Standard   : VHDL'87
 -------------------------------------------------------------------------------
@@ -197,7 +197,7 @@ begin
   -- Clock Divider
   -----------------------------------------------------------------------------
   instance_clk_25Mhz: entity work.clock_divider(rtl)
-  generic map (ratio => FSYS/25_000_000)
+  generic map (RATIO => FSYS/25_000_000)
   port    map (
      clk_i          => clk_i
     ,arstn_i        => arstn_i
