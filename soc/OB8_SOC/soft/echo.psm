@@ -38,6 +38,10 @@ uart_DLM            DSOUT     uart_id + 1
 ; ;------------------------------------
                     ORG       $00
 main: 
+main_led_init: 
+                    LOAD      s0, $FF
+                    OUT       s0, led
+
 main_uart_init: 
 ; ;                 UART INIT
 ; ;                 (8bits word + DLAB=1)
@@ -63,15 +67,21 @@ main_vga_init:
                     OUT       s0, vga_color
 
 main_body: 
-                    LOAD      s0, 'H'
+                    LOAD      s0, 'd'
                     CALL      echo
                     LOAD      s0, 'e'
                     CALL      echo
-                    LOAD      s0, 'l'
+                    LOAD      s0, 'a'
                     CALL      echo
-                    LOAD      s0, 'l'
+                    LOAD      s0, 'd'
                     CALL      echo
-                    LOAD      s0, 'o'
+                    LOAD      s0, 'b'
+                    CALL      echo
+                    LOAD      s0, 'e'
+                    CALL      echo
+                    LOAD      s0, 'e'
+                    CALL      echo
+                    LOAD      s0, 'f'
                     CALL      echo
 
 main_body_loop: 
@@ -88,9 +98,10 @@ main_body_loop:
 ; ; envoie le char sur le vga et sur l'uart
 ; ;-------------------------------------
 echo: 
-                    out       s0, led
+; ;                 out       s0, led
                     CALL      print_char
                     CALL      send_char
+                    CALL      wait_100ms
                     RET       
 
 
@@ -103,12 +114,11 @@ echo:
 send_char: 
 ; ;                 Wait for the TXEmpty
 wait_tx_empty: 
-                    IN        s0, uart_LSR
-                    TEST      s0, $40
+                    IN        s1, uart_LSR
+                    TEST      s1, $40
                     JUMP      Z, wait_tx_empty
 ; ;                 Send the char in s0
-                    OUT       s1, uart_THR_DLL
-                    CALL      wait_100ms
+                    OUT       s0, uart_THR_DLL
                     RET       
 
 ; ;------------------------------------
@@ -120,6 +130,7 @@ wait_tx_empty:
 receive_char: 
 ; ;                 Check if a char is available
                     IN        s0, uart_LSR
+                    OUT       s0, led
                     TEST      s0, $01
                     JUMP      Z, receive_char
 

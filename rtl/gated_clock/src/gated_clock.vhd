@@ -6,7 +6,7 @@
 -- Author     : Mathieu Rosière
 -- Company    : 
 -- Created    : 2017-03-31
--- Last update: 2017-03-31
+-- Last update: 2017-04-03
 -- Platform   : 
 -- Standard   : VHDL'87
 -------------------------------------------------------------------------------
