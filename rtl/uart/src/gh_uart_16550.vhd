@@ -233,7 +233,6 @@ END COMPONENT;
 	signal iMSR   : std_logic_vector(7 downto 4); -- Modem Status Register
 	signal RD_IIR : std_logic;
 	
-	signal iRD    : std_logic_vector(7 downto 0);
 	signal CSn    : std_logic;
 	signal WR_B   : std_logic_vector(7 downto 0);
 	signal WR_F   : std_logic;
