@@ -45,23 +45,27 @@ print("  );",file=fd_result)
 print("end {0} ;".format(rom_name),file=fd_result)
 print("",file=fd_result)
 print("architecture rtl of {0} is".format(rom_name),file=fd_result)
-print("begin",file=fd_result)
-print("  read : process(clk_i)",file=fd_result)
-print("  begin",file=fd_result)
-print("    if(clk_i'event and clk_i = '1') then",file=fd_result)
-print("      case to_integer(unsigned(addr_i)) is",file=fd_result)
-
+print("  type rom_t is array (0 to 1024-1) of std_logic_vector(18-1 downto 0);",file=fd_result)
+print("  signal rom : rom_t :=",file=fd_result)
+print("   (",file=fd_result)
 for addr in range(addrmax) :
     data_tmp = init_data[addr*16:(addr*16)+16]
     data_tmp = data_tmp[::-1]
     datap_tmp = initp_data[addr*2:(addr*2)+2]
     datap_tmp = datap_tmp[::-1]
     data = datap_tmp + data_tmp
+    if (addr==0) :
+     print("    {0} => \"{1}\"".format(addr,data),file=fd_result)
+    else :
+     print("   ,{0} => \"{1}\"".format(addr,data),file=fd_result)
+print("   );",file=fd_result)
 
-    print("        when {0} => data_o <= \"{1}\";".format(addr,data),file=fd_result)
 
-print("        when others => data_o <= (OTHERS => \'0\');".format(addr,data),file=fd_result)
-print("      end case;",file=fd_result)
+print("begin",file=fd_result)
+print("  process(clk_i)",file=fd_result)
+print("  begin",file=fd_result)
+print("    if(clk_i'event and clk_i = '1') then",file=fd_result)
+print("       data_o <= rom(to_integer(unsigned(addr_i)));",file=fd_result);
 print("    end if;",file=fd_result)
 print("  end process;",file=fd_result)
 
