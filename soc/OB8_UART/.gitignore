@@ -1,3 +1,5 @@
 nanoxpython/
 extract/
-sim/
+sim/ise
+nx.sh
+run.sh
