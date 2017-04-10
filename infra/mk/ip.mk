@@ -9,7 +9,7 @@ export PATH_EXTRACT
 
 NAME		= $(notdir $(CURDIR))
 
-FILES_VHDL	+= $(wildcard src/*.vhd)
+FILES_VHDL	+= $(wildcard src/*.vhd) $(wildcard boards/$(BOARD)/*)
 
 extract		: $(PATH_EXTRACT)
 		$(foreach deps,$(IP_DEPS),$(MAKE) $(MFLAGS) -C $(ASYLUM_RTL_HOME)/$(deps) extract;)

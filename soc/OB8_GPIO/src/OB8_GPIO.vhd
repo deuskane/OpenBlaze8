@@ -6,7 +6,7 @@
 -- Author     : Mathieu Rosiere
 -- Company    : 
 -- Created    : 2017-03-30
--- Last update: 2017-04-03
+-- Last update: 2017-04-10
 -- Platform   : 
 -- Standard   : VHDL'93/02
 -------------------------------------------------------------------------------
@@ -27,18 +27,22 @@ use work.OpenBlaze8_pkg.all;
 use work.pbi_pkg.all;
 
 entity OB8_GPIO is
+  generic (
+    FSYS       : positive:= 50_000_000;
+    FSYS_INT   : positive:= 50_000_000;
+    NB_SWITCH  : positive := 8;
+    NB_LED     : positive := 8
+    );
   port (
     clk_i      : in  std_logic;
     arstn_i    : in  std_logic;
 
-    switch_i   : in  std_logic_vector(5 downto 0);
-    led_o      : out std_logic_vector(7 downto 0)
+    switch_i   : in  std_logic_vector(NB_SWITCH-1 downto 0);
+    led_o      : out std_logic_vector(NB_LED   -1 downto 0)
 );
 end OB8_GPIO;
 
 architecture rtl of OB8_GPIO is
-  constant FSYS                       : positive:= 50_000_000;
-  constant FSYS_INT                   : positive:= 50_000_000;
 
   constant OPENBLAZE8_STACK_DEPTH     : natural := 32;
   constant OPENBLAZE8_RAM_DEPTH       : natural := 64;
@@ -108,7 +112,7 @@ begin  -- architecture rtl
   
   ins_pbi_switch : entity work.pbi_GPIO(rtl)
     generic map(
-    NB_IO            => 6    ,
+    NB_IO            => NB_SWITCH,
     DATA_OE_INIT     => false,
     DATA_OE_FORCE    => true ,
     IT_ENABLE        => false, -- GPIO can generate interruption
@@ -129,7 +133,7 @@ begin  -- architecture rtl
 
   ins_pbi_led : entity work.pbi_GPIO(rtl)
     generic map(
-    NB_IO            => 8    ,
+    NB_IO            => NB_LED,
     DATA_OE_INIT     => true ,
     DATA_OE_FORCE    => true ,
     IT_ENABLE        => false, -- GPIO can generate interruption
