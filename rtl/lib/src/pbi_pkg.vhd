@@ -6,7 +6,7 @@
 -- Author     : mrosiere
 -- Company    : 
 -- Created    : 2017-03-15
--- Last update: 2017-03-18
+-- Last update: 2017-04-10
 -- Platform   : 
 -- Standard   : VHDL'93/02
 -------------------------------------------------------------------------------
@@ -31,7 +31,7 @@ package pbi_pkg is
     we           : std_logic;                                   -- Have a valid write (WRITE_STROBE)
     addr         : std_logic_vector(PBI_ADDR_WIDTH-1 downto 0); -- Access address (PORT_ID)
     wdata        : std_logic_vector(PBI_DATA_WIDTH-1 downto 0); -- Write data (OUT_PORT)
-  end record pbi_init_t;
+  end record pbi_ini_t;
 
   type pbi_tgt_t is record
     busy         : std_logic;                                   -- Additionnal port
