@@ -4,7 +4,7 @@ function environment_main ()
 {
     local path=$(dirname $(readlink -f $BASH_SOURCE));
 
-    export BOARD="Basys1";
+    export BOARD="Digilent-Basys1";
 
     export ASYLUM_HOME="${path}";
     export ASYLUM_RTL_HOME="${ASYLUM_HOME}/rtl";
