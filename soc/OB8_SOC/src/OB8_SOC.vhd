@@ -6,7 +6,7 @@
 -- Author     : Mathieu Rosiere
 -- Company    : 
 -- Created    : 2017-03-30
--- Last update: 2017-04-03
+-- Last update: 2017-04-11
 -- Platform   : 
 -- Standard   : VHDL'93/02
 -------------------------------------------------------------------------------
@@ -27,18 +27,24 @@ use work.OpenBlaze8_pkg.all;
 use work.pbi_pkg.all;
 
 entity OB8_SOC is
+  generic (
+    FSYS       : positive := 50_000_000;
+    FSYS_INT   : positive := 50_000_000;
+    NB_SWITCH  : positive := 8;
+    NB_LED     : positive := 8
+    );
   port (
     clk_i      : in  std_logic;
     arstn_i    : in  std_logic;
 
-    switch_i   : in  std_logic_vector(5 downto 0);
-    led_o      : out std_logic_vector(7 downto 0);
+    switch_i   : in  std_logic_vector(NB_SWITCH-1 downto 0);
+    led_o      : out std_logic_vector(NB_LED   -1 downto 0);
 
     vga_HSYNC_o: out std_logic;
     vga_VSYNC_o: out std_logic;
-    vga_Red_o  : out std_logic;
-    vga_Green_o: out std_logic;
-    vga_Blue_o : out std_logic;
+    vga_Red_o  : out std_logic_vector (2 downto 0);
+    vga_Green_o: out std_logic_vector (2 downto 0);
+    vga_Blue_o : out std_logic_vector (2 downto 1);
 
     --UART
     srx_i      : in  std_logic;
@@ -48,8 +54,6 @@ entity OB8_SOC is
 end OB8_SOC;
 
 architecture rtl of OB8_SOC is
-  constant FSYS                       : positive:= 25_000_000;
-  constant FSYS_INT                   : positive:= 25_000_000;
   constant OPENBLAZE8_STACK_DEPTH     : natural := 32;
   constant OPENBLAZE8_RAM_DEPTH       : natural := 64;
   constant OPENBLAZE8_DATA_WIDTH      : natural := 8;
@@ -77,10 +81,6 @@ architecture rtl of OB8_SOC is
   signal pbi_tgt_vga                  : pbi_tgt_t;
   signal pbi_tgt_uart                 : pbi_tgt_t;
 
-  signal vga_Red                      : std_logic_vector (2 downto 0);
-  signal vga_Green                    : std_logic_vector (2 downto 0);
-  signal vga_Blue                     : std_logic_vector (2 downto 1);
-  
 begin  -- architecture rtl
 
   ins_clock_divider : entity work.clock_divider(rtl)
@@ -133,7 +133,7 @@ begin  -- architecture rtl
   
   ins_pbi_switch : entity work.pbi_GPIO(rtl)
     generic map(
-      NB_IO            => 6    ,
+      NB_IO            => NB_SWITCH,
       DATA_OE_INIT     => false,
       DATA_OE_FORCE    => true ,
       IT_ENABLE        => false, -- GPIO can generate interruption
@@ -154,7 +154,7 @@ begin  -- architecture rtl
 
   ins_pbi_led : entity work.pbi_GPIO(rtl)
     generic map(
-      NB_IO            => 8    ,
+      NB_IO            => NB_LED,
       DATA_OE_INIT     => true ,
       DATA_OE_FORCE    => true ,
       IT_ENABLE        => false, -- GPIO can generate interruption
@@ -186,14 +186,10 @@ begin  -- architecture rtl
       pbi_tgt_o        => pbi_tgt_vga,
       vga_HSYNC_o      => vga_HSYNC_o,
       vga_VSYNC_o      => vga_VSYNC_o,
-      vga_Red_o        => vga_Red    ,
-      vga_Green_o      => vga_Green  ,
-      vga_Blue_o       => vga_Blue 
+      vga_Red_o        => vga_Red_o  ,
+      vga_Green_o      => vga_Green_o,
+      vga_Blue_o       => vga_Blue_o 
       );
-
-  vga_Red_o   <= vga_Red  (2) or vga_Red  (1) or vga_Red  (0);
-  vga_Green_o <= vga_Green(2) or vga_Green(1) or vga_Green(0);
-  vga_Blue_o  <= vga_Blue (2) or vga_Blue (1);  
 
   ins_pbi_uart : entity work.pbi_uart(rtl)
     generic map(
