@@ -6,7 +6,7 @@
 -- Author     : Mathieu Rosiere
 -- Company    : 
 -- Created    : 2017-03-30
--- Last update: 2017-03-31
+-- Last update: 2017-04-11
 -- Platform   : 
 -- Standard   : VHDL'93/02
 -------------------------------------------------------------------------------
@@ -30,13 +30,13 @@ end entity tb_OB8_SOC;
 architecture tb of tb_OB8_SOC is
     signal clk_i            : std_logic := '0';
     signal arstn_i          : std_logic;
-    signal switch_i         : std_logic_vector(5 downto 0);
+    signal switch_i         : std_logic_vector(7 downto 0);
     signal led_o            : std_logic_vector(7 downto 0);
     signal vga_HSYNC_o      : std_logic;
     signal vga_VSYNC_o      : std_logic;
-    signal vga_Red_o        : std_logic;
-    signal vga_Green_o      : std_logic;
-    signal vga_Blue_o       : std_logic;
+    signal vga_Red_o        : std_logic_vector (2 downto 0);
+    signal vga_Green_o      : std_logic_vector (2 downto 0);
+    signal vga_Blue_o       : std_logic_vector (2 downto 1);
     signal sRX_i            : std_logic;
     signal sTX_o            : std_logic;
     signal bdr_o            : std_logic;
@@ -70,7 +70,7 @@ begin  -- architecture tb
 
       arstn_i <= '1';
 
-      switch_i <= "010110";
+      switch_i <= "10010110";
       sRX_i    <= '0';
       
       wait;
