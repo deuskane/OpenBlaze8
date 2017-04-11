@@ -6,7 +6,7 @@
 -- Author     : Mathieu Rosiere
 -- Company    : 
 -- Created    : 2017-03-30
--- Last update: 2017-04-10
+-- Last update: 2017-04-11
 -- Platform   : 
 -- Standard   : VHDL'93/02
 -------------------------------------------------------------------------------
@@ -22,9 +22,6 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
-library work;
-use work.OpenBlaze8_pkg.all;
-use work.pbi_pkg.all;
 
 entity OB8_GPIO_Basys1 is
   generic (
@@ -63,5 +60,3 @@ begin  -- architecture rtl
     );
 
 end architecture rtl;
-    
-  
