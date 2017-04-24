@@ -6,7 +6,7 @@
 -- Author     : Mathieu Rosière
 -- Company    : 
 -- Created    : 2013-12-26
--- Last update: 2017-04-03
+-- Last update: 2017-04-24
 -- Platform   : 
 -- Standard   : VHDL'87
 -------------------------------------------------------------------------------
@@ -28,6 +28,7 @@ entity clock_divider is
     generic(RATIO        : positive := 2
             );
     port   (clk_i        : in  std_logic;
+            cke_i        : in  std_logic;
             arstn_i      : in  std_logic;
             clk_div_o    : out std_logic);
 end clock_divider;
@@ -44,18 +45,23 @@ begin
   gen_ratio_gt_1: if RATIO > 1 generate
   process(arstn_i,clk_i)
   begin 
-    if arstn_i='0' then
+    if arstn_i='0'
+    then
       clock_count <= 0;
       clock_div   <= '0';
-    elsif rising_edge(clk_i) then
-
-      -- decrease clock diviser
-      if (clock_count = RATIO-1) then
-        clock_count <= 0;
-        clock_div   <= '1';
-      else
-        clock_count <= clock_count+1;
-        clock_div   <= '0';
+    elsif rising_edge(clk_i)
+    then
+      if (cke_i = '1')
+      then
+        -- decrease clock diviser
+        if (clock_count = RATIO-1)
+        then
+          clock_count <= 0;
+          clock_div   <= '1';
+        else
+          clock_count <= clock_count+1;
+          clock_div   <= '0';
+        end if;
       end if;
     end if;
   end process;
