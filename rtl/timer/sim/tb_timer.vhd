@@ -39,7 +39,8 @@ architecture tb of tb_timer is
 
   -- =====[ Constants ]===========================
   constant FSYS             : positive := 50_000_000;
-  constant TICK_RATIO       : positive :=  5_000_000;
+  constant PERIOD           : time     := 20ns;
+  constant TICK_PERIOD      : real     := 0.001; -- 1ms
   constant SIZE_ADDR        : natural  := 3;   
   constant SIZE_DATA        : natural  := 8;   
   constant IT_ENABLE        : boolean  := false;
@@ -78,7 +79,7 @@ begin
   dut : entity work.timer(rtl)
   generic map
    (FSYS             => FSYS      
-   ,TICK_RATIO       => TICK_RATIO
+   ,TICK_PERIOD      => TICK_PERIOD
    ,SIZE_ADDR        => SIZE_ADDR 
    ,SIZE_DATA        => SIZE_DATA 
    ,IT_ENABLE        => IT_ENABLE 
@@ -103,7 +104,7 @@ begin
   ------------------------------------------------
   -- Clock process
   ------------------------------------------------
-  clk_i <= not clk_i after 10ns;
+  clk_i <= not clk_i after PERIOD/2;
   
   ------------------------------------------------
   -- Test process

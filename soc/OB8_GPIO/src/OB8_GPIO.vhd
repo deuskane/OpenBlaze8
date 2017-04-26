@@ -6,7 +6,7 @@
 -- Author     : Mathieu Rosiere
 -- Company    : 
 -- Created    : 2017-03-30
--- Last update: 2017-04-10
+-- Last update: 2017-04-26
 -- Platform   : 
 -- Standard   : VHDL'93/02
 -------------------------------------------------------------------------------
@@ -73,6 +73,7 @@ begin  -- architecture rtl
     port map (
       clk_i            => clk_i  ,
       arstn_i          => arstn_i,
+      cke_i            => '1',
       clk_div_o        => clk
       );
 

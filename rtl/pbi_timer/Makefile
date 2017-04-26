@@ -2,11 +2,8 @@ ifeq ("$(ASYLUM_INFRA_HOME)","")
 $(error Environment variable "ASYLUM_INFRA_HOME" must be set)
 endif
 
-IP_DEPS       = pbi_OpenBlaze8		\
-		pbi_GPIO		\
-		pbi_timer		\
-		pbi_vga_controller	\
-		pbi_uart		\
-		clock_divider
+IP_DEPS       = lib		\
+		timer         	\
+		pbi_wrapper_target
 
 include $(ASYLUM_INFRA_HOME)/mk/ip.mk
