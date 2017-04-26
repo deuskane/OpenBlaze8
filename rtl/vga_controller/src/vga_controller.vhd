@@ -6,7 +6,7 @@
 -- Author     : Mathieu Rosiere
 -- Company    : 
 -- Created    : 2013-12-26
--- Last update: 2017-04-03
+-- Last update: 2017-04-26
 -- Platform   : 
 -- Standard   : VHDL'87
 -------------------------------------------------------------------------------
@@ -201,6 +201,7 @@ begin
   port    map (
      clk_i          => clk_i
     ,arstn_i        => arstn_i
+    ,cke_i          => '1'
     ,clk_div_o      => clk_25Mhz
     );
 

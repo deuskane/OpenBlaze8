@@ -40,10 +40,10 @@ use IEEE.numeric_std.ALL;
 entity timer is
   generic(
     FSYS             : positive := 50_000_000;
-    TICK_RATIO       : positive := 1_000;
+    TICK_PERIOD      : real     := 0.001; -- 1ms
     SIZE_ADDR        : natural  := 3;     -- Bus Address Width
     SIZE_DATA        : natural  := 8;     -- Bus Data    Width
-    IT_ENABLE        : boolean  := false  -- GPIO can generate interruption
+    IT_ENABLE        : boolean  := false  -- Timer can generate interruption
     );
 
   port (
@@ -69,7 +69,8 @@ end entity timer;
 
 architecture rtl of timer is
   constant CST0 : std_logic_vector(1024-1 downto 0) := (others => '0');
-  constant TICK : positive := FSYS/TICK_RATIO;
+  constant TICK : positive := positive(real(FSYS)*TICK_PERIOD);
+  
   -----------------------------------------------------------------------------
   -- Address
   -----------------------------------------------------------------------------
@@ -302,7 +303,6 @@ begin  -- architecture rtl
   -----------------------------------------------------------------------------
   -- Timer control
   -----------------------------------------------------------------------------
-
   counter_cur_null   <= '1' when counter_test = CST0(counter_r'range) else
                         '0';
   
@@ -312,4 +312,9 @@ begin  -- architecture rtl
   timer_end          <= timer_enable_r and counter_cur_null;
   timer_count        <= timer_enable_r when timer_use_tick_r = '0' else
                         tick_event; -- count each cycle
+
+  -----------------------------------------------------------------------------
+  -- Interruption
+  -----------------------------------------------------------------------------
+  interrupt_o        <= '0'; -- TODO
 end architecture rtl;

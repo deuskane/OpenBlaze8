@@ -6,7 +6,7 @@
 -- Author     : Cédric DEBARGE
 -- Company    :
 -- Created    : 2017-03-30
--- Last update: 2017-04-03
+-- Last update: 2017-04-26
 -- Platform   :
 -- Standard   : VHDL'87
 -------------------------------------------------------------------------------
@@ -151,6 +151,7 @@ begin
           port map (
             clk_i            => clk_i  ,
             arstn_i          => resetn_i,
+            cke_i            => '1',
             clk_div_o        => s_clk
             );
 

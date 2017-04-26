@@ -6,7 +6,7 @@
 -- Author     : Mathieu Rosiere
 -- Company    : 
 -- Created    : 2017-03-30
--- Last update: 2017-04-11
+-- Last update: 2017-04-26
 -- Platform   : 
 -- Standard   : VHDL'93/02
 -------------------------------------------------------------------------------
@@ -69,6 +69,8 @@ architecture rtl of OB8_SOC is
   --                                                                                    "00000011"
   constant ID_UART                    : std_logic_vector (PBI_ADDR_WIDTH-1 downto 0) := "00011000";
   --                                                                                    "00000111"
+  constant ID_TIMER                   : std_logic_vector (PBI_ADDR_WIDTH-1 downto 0) := "00010000";
+  --                                                                                    "00000111"
   
   signal clk                          : std_logic;
 
@@ -80,6 +82,7 @@ architecture rtl of OB8_SOC is
   signal pbi_tgt_led                  : pbi_tgt_t;
   signal pbi_tgt_vga                  : pbi_tgt_t;
   signal pbi_tgt_uart                 : pbi_tgt_t;
+  signal pbi_tgt_timer                : pbi_tgt_t;
 
 begin  -- architecture rtl
 
@@ -90,6 +93,7 @@ begin  -- architecture rtl
     port map (
       clk_i            => clk_i  ,
       arstn_i          => arstn_i,
+      cke_i            => '1',
       clk_div_o        => clk
       );
   
@@ -118,11 +122,13 @@ begin  -- architecture rtl
   pbi_tgt.rdata <= pbi_tgt_switch.rdata or
                    pbi_tgt_led   .rdata or
                    pbi_tgt_vga   .rdata or
-                   pbi_tgt_uart  .rdata;
+                   pbi_tgt_uart  .rdata or
+                   pbi_tgt_timer .rdata;
   pbi_tgt.busy  <= pbi_tgt_switch.busy  or
                    pbi_tgt_led   .busy  or
                    pbi_tgt_vga   .busy  or
-                   pbi_tgt_uart  .busy;
+                   pbi_tgt_uart  .busy  or
+                   pbi_tgt_timer .busy;
 
   ins_pbi_OpenBlaze8_ROM : entity work.OpenBlaze8_ROM(rtl)
     port map (
@@ -209,6 +215,23 @@ begin  -- architecture rtl
       bdr_o           => bdr_o,
       interrupt_o     => open,
       interrupt_ack_i => '0'
+      );
+
+  ins_pbi_timer : entity work.pbi_timer(rtl)
+    generic map(
+      FSYS             => FSYS_INT,
+      TICK_PERIOD      => 0.001, -- 1ms
+      IT_ENABLE        => false,
+      ID               => ID_TIMER
+      )
+    port map  (
+      clk_i            => clk           ,
+      cke_i            => '1'           ,
+      arstn_i          => arstn_i       ,
+      pbi_ini_i        => pbi_ini       ,
+      pbi_tgt_o        => pbi_tgt_timer ,
+      interrupt_o      => open          ,
+      interrupt_ack_i  => '0'
       );
 
 end architecture rtl;
