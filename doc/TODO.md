@@ -6,8 +6,6 @@
   * Check parameters
 * GPIO
   * Interrupt Support
-* clock_divider
-  * Change architecture
 
 # Wishlist
 
@@ -15,7 +13,6 @@
   * Add new output "inout_access"
   * Add CMT
 * IT controller
-* Timer
 * vga_controller
   * Change architecture
   * Add frame buffer
