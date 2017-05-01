@@ -6,7 +6,7 @@
 -- Author     : Mathieu Rosiere
 -- Company    : 
 -- Created    : 2017-03-30
--- Last update: 2017-03-30
+-- Last update: 2017-05-01
 -- Platform   : 
 -- Standard   : VHDL'93/02
 -------------------------------------------------------------------------------
@@ -62,7 +62,7 @@ architecture rtl of pbi_OpenBlaze8 is
 begin  -- architecture rtl
 
   arst <= not arstn_i;
-  cke  <= cke_i or pbi_tgt_i.busy;
+  cke  <= cke_i or not pbi_tgt_i.busy;
   
   OpenBlaze8 : entity work.OpenBlaze8(rtl)
   generic map(

@@ -3,7 +3,6 @@ $(error Environment variable "ASYLUM_INFRA_HOME" must be set)
 endif
 
 IP_DEPS       = lib		\
-		OpenBlaze8	\
-		pbi_wrapper_target
+		OpenBlaze8
 
 include $(ASYLUM_INFRA_HOME)/mk/ip.mk
