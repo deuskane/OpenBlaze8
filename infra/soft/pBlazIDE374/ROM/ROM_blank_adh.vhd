@@ -49,14 +49,14 @@ generic (   ADDRSIZE : natural:=10;      --a modifier
             JADDRSIZE : natural:=11;     --trois cibles fpga virtex  s2  S3
             JDATASIZE : natural:=9);     -- ou coolruner
     port ( 
-        clk : in std_logic ;
-        reset : out std_logic ;
-        address : in std_logic_vector( ADDRSIZE - 1 downto 0 ) ;
-        instruction : out std_logic_vector( INSTSIZE - 1 downto 0 )
+        clk_i : in std_logic ;
+--      reset : out std_logic ;
+        addr_i : in std_logic_vector( ADDRSIZE - 1 downto 0 ) ;
+        data_o : out std_logic_vector( INSTSIZE - 1 downto 0 )
     ) ;
 end entity {name} ;
 
-architecture mix of {name} is
+architecture rtl of {name} is
 
 
     component jtag_shifter is
@@ -303,16 +303,16 @@ begin
 	            ENB => '1',
 	            WEB => '0',
 	            SSRB => '0',
-	            CLKB => clk,
-	            ADDRB => address,
-	            DOB => instruction( 18 - 3 downto 0 ),
-	            DOPB => instruction( 18 - 1 downto 18 - 2 ),
+	            CLKB => clk_i,
+	            ADDRB => addr_i,
+	            DOB => data_o( 18 - 3 downto 0 ),
+	            DOPB => data_o( 18 - 1 downto 18 - 2 ),
 	            DIA => jdata( 9 - 2 downto 0 ),
 	            DIPA => jdata( 9 - 1 downto 9 - 1 ),
 	            ENA => juser1,
 	            WEA => jwrite,
 	            SSRA => '0',
-	            CLKA => clk,
+	            CLKA => clk_i,
 	            ADDRA => jaddr,
 	            DOA => open,
 	            DOPA => open 
@@ -325,4 +325,4 @@ begin
 	jaddr <= ( others => '0' ) ;
 	juser1 <= '0' ;
 	jwrite <= '0' ;
-end architecture mix ;
+end architecture rtl ;
