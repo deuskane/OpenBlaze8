@@ -1,8 +1,8 @@
 -------------------------------------------------------------------------------
--- Title      : OB8_GPIO_Basys1
+-- Title      : KCPSM3_GPIO_Basys1
 -- Project    : 
 -------------------------------------------------------------------------------
--- File       : OB8_GPIO_Basys1.vhd
+-- File       : KCPSM3_GPIO_Basys1.vhd
 -- Author     : Mathieu Rosiere
 -- Company    : 
 -- Created    : 2017-03-30
@@ -23,7 +23,7 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
-entity OB8_GPIO_Basys1 is
+entity KCPSM3_GPIO_Basys1 is
   generic (
     FSYS       : positive:= 50_000_000;
     FSYS_INT   : positive:= 50_000_000
@@ -35,9 +35,9 @@ entity OB8_GPIO_Basys1 is
     switch_i   : in  std_logic_vector(7 downto 0);
     led_o      : out std_logic_vector(7 downto 0)
 );
-end OB8_GPIO_Basys1;
+end KCPSM3_GPIO_Basys1;
 
-architecture rtl of OB8_GPIO_Basys1 is
+architecture rtl of KCPSM3_GPIO_Basys1 is
 
   signal arstn : std_logic;
   
@@ -45,11 +45,11 @@ begin  -- architecture rtl
 
   arstn <= not arst_i;
   
-  ins_OB8_GPIO : entity work.OB8_GPIO(rtl)
+  ins_KCPSM3_GPIO : entity work.OB8_GPIO(rtl)
     generic map
     (FSYS       => FSYS    
     ,FSYS_INT   => FSYS_INT
-    ,USE_KCPSM  => false
+    ,USE_KCPSM  => true
     ,NB_SWITCH  => 8
     ,NB_LED     => 8
     )

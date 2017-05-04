@@ -1,12 +1,12 @@
 -------------------------------------------------------------------------------
--- Title      : OB8_GPIO
+-- Title      : OB8_TIMER
 -- Project    : 
 -------------------------------------------------------------------------------
--- File       : OB8_GPIO.vhd
+-- File       : OB8_TIMER.vhd
 -- Author     : Mathieu Rosiere
 -- Company    : 
--- Created    : 2017-03-30
--- Last update: 2017-05-01
+-- Created    : 2017-04-30
+-- Last update: 2017-05-04
 -- Platform   : 
 -- Standard   : VHDL'93/02
 -------------------------------------------------------------------------------
@@ -16,7 +16,7 @@
 -------------------------------------------------------------------------------
 -- Revisions  :
 -- Date        Version  Author  Description
--- 2017-03-30  1.0      mrosiere	Created
+-- 2017-04-30  1.0      mrosiere	Created
 -------------------------------------------------------------------------------
 
 library ieee;
@@ -25,10 +25,10 @@ use ieee.numeric_std.all;
 library work;
 use work.pbi_pkg.all;
 
-entity OB8_GPIO is
+entity OB8_TIMER is
   generic (
-    FSYS       : positive:= 50_000_000;
-    FSYS_INT   : positive:= 50_000_000;
+    FSYS       : positive := 50_000_000;
+    FSYS_INT   : positive := 50_000_000;
     USE_KCPSM  : boolean  := false;
     NB_SWITCH  : positive := 8;
     NB_LED     : positive := 8
@@ -40,13 +40,16 @@ entity OB8_GPIO is
     switch_i   : in  std_logic_vector(NB_SWITCH-1 downto 0);
     led_o      : out std_logic_vector(NB_LED   -1 downto 0)
 );
-end OB8_GPIO;
+end OB8_TIMER;
 
-architecture rtl of OB8_GPIO is
+architecture rtl of OB8_TIMER is
+
   constant ID_SWITCH                  : std_logic_vector (PBI_ADDR_WIDTH-1 downto 0) := "00000000";
   --                                                                                    "00000011"
   constant ID_LED                     : std_logic_vector (PBI_ADDR_WIDTH-1 downto 0) := "00000100";
   --                                                                                    "00000011"
+  constant ID_TIMER                   : std_logic_vector (PBI_ADDR_WIDTH-1 downto 0) := "00010000";
+  --                                                                                    "00000111"
 
   signal clk                          : std_logic;
 
@@ -56,6 +59,7 @@ architecture rtl of OB8_GPIO is
   signal pbi_tgt                      : pbi_tgt_t;
   signal pbi_tgt_switch               : pbi_tgt_t;
   signal pbi_tgt_led                  : pbi_tgt_t;
+  signal pbi_tgt_timer                : pbi_tgt_t;
 
 begin  -- architecture rtl
   ins_clock_divider : entity work.clock_divider(rtl)
@@ -86,9 +90,11 @@ begin  -- architecture rtl
     );
 
   pbi_tgt.rdata <= pbi_tgt_switch.rdata or
-                   pbi_tgt_led   .rdata;
+                   pbi_tgt_led   .rdata or
+                   pbi_tgt_timer .rdata;
   pbi_tgt.busy  <= pbi_tgt_switch.busy  or
-                   pbi_tgt_led   .busy;
+                   pbi_tgt_led   .busy  or
+                   pbi_tgt_timer .busy;
 
   ins_pbi_OpenBlaze8_ROM : entity work.OpenBlaze8_ROM(rtl)
     port map (
@@ -138,6 +144,25 @@ begin  -- architecture rtl
     interrupt_o      => open       ,
     interrupt_ack_i  => '0'
     );
+
+  ins_pbi_timer : entity work.pbi_timer(rtl)
+    generic map(
+--    FSYS             => FSYS_INT,
+--    TICK_PERIOD      => 0.001, -- 1ms
+      TICK             => positive(real(FSYS_INT)*0.001), -- 1 ms
+--    TICK             => 10,
+      IT_ENABLE        => false,
+      ID               => ID_TIMER
+      )
+    port map  (
+      clk_i            => clk           ,
+      cke_i            => '1'           ,
+      arstn_i          => arstn_i       ,
+      pbi_ini_i        => pbi_ini       ,
+      pbi_tgt_o        => pbi_tgt_timer ,
+      interrupt_o      => open          ,
+      interrupt_ack_i  => '0'
+      );
 
 end architecture rtl;
     

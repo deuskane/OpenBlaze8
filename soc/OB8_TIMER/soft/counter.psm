@@ -13,59 +13,45 @@
 ; ; Constantes
 ; ;------------------------------------
 sp                  EQU       sF
-color               EQU       sE
+
 ; ;------------------------------------
 ; ; directives pour le simulateur:  definition des  E/S
 ; ;------------------------------------
 switch_id           EQU       $00
 led_id              EQU       $04
-vga_id              EQU       $08
 timer_id            EQU       $10
 
 switch              DSIN      switch_id
 led                 DSOUT     led_id
-vga_config          DSOUT     vga_id + 0
-vga_color           DSOUT     vga_id + 1
-vga_txt             DSOUT     vga_id + 2
 timer_ctrl_w        DSOUT     timer_id + 0
 timer_ctrl_r        DSIN      timer_id + 0
 timer_cnt0          DSOUT     timer_id + 4
+timer_cnt1          DSOUT     timer_id + 5
+timer_cnt2          DSOUT     timer_id + 6
+timer_cnt3          DSOUT     timer_id + 7
+
 ; ;------------------------------------
 ; ; MAIN
 ; ;------------------------------------
                     ORG       $00
 main: 
-; LOAD      s0, 1
-; OUT       s0, vga_id + 0
-; LOAD      color, 0
-                    LOAD      color, $41
-
-                    LOAD      s0, $57 + $0D
-                    OUT       s0, vga_id + 2
-                    LOAD      s0, $57 + $0E
-                    OUT       s0, vga_id + 2
-                    LOAD      s0, $57 + $0A
-                    OUT       s0, vga_id + 2
-                    LOAD      s0, $57 + $0D
-                    OUT       s0, vga_id + 2
-                    LOAD      s0, $57 + $0B
-                    OUT       s0, vga_id + 2
-                    LOAD      s0, $57 + $0E
-                    OUT       s0, vga_id + 2
-                    LOAD      s0, $57 + $0E
-                    OUT       s0, vga_id + 2
-                    LOAD      s0, $57 + $0F
-                    OUT       s0, vga_id + 2
-
+                    LOAD      sp, 0
+                    LOAD      s0, 0
 main_loop: 
-                    IN        s0, SWITCH_ID
-                    AND       s0, $01
                     OUT       s0, led_id
-                    OUT       s0, vga_id + 0
 
-                    OUT       color, vga_id + 1
-                    XOR       color, $FF
-                    CALL      wait_1s
+                    IN        s1, switch_id
+                    TEST      s1, $01
+                    CALL      Z, main_loop_wait_1s_hard
+                    
+main_loop_wait_1s_soft: 
+                    SUB       s0, 1
+                    CALL      wait_1s_soft
+                    JUMP      main_loop
+
+main_loop_wait_1s_hard: 
+                    ADD       s0, 1
+                    CALL      wait_1s_hard
                     JUMP      main_loop
 
 ; ;------------------------------------
@@ -75,17 +61,57 @@ main_loop:
 ; ; Attendre 1s
 ; ;------------------------------------
 wait_1s: 
-                    CALL      wait_100ms
-                    CALL      wait_100ms
-                    CALL      wait_100ms
-                    CALL      wait_100ms
-                    CALL      wait_100ms
-                    CALL      wait_100ms
-                    CALL      wait_100ms
-                    CALL      wait_100ms
-                    CALL      wait_100ms
-                    CALL      wait_100ms
+                    CALL      wait_1s_soft
                     RET       
+
+wait_1s_soft: 
+; ;                 save
+                    STORE     s0, sp
+                    ADD       sp, 1
+
+                    LOAD      s0, 10
+wait_1s_soft_loop: 
+                    CALL      wait_100ms
+                    SUB       s0, 1
+                    JUMP      NZ, wait_1s_soft_loop
+
+; ;                 restore
+                    SUB       sp, 1
+                    FETCH     s0, sp
+                    RET       
+
+wait_1s_hard: 
+; ;                 save
+                    STORE     s0, sp
+                    ADD       sp, 1
+
+; ; 	            Timer Disable
+                    LOAD      s0, $00
+                    OUT       s0, timer_id + 0
+
+; ;                 Timer hardware version
+; ;                 Set 1000 in counter
+                    LOAD      s0, $E8
+                    OUT       s0, timer_id + 4
+                    LOAD      s0, $03
+                    OUT       s0, timer_id + 5
+                    LOAD      s0, $00
+                    OUT       s0, timer_id + 6
+                    OUT       s0, timer_id + 7
+
+; ; 	            Timer Enable + Use Tick
+                    LOAD      s0, $11
+                    OUT       s0, timer_id + 0
+wait_1s_hard_loop: 
+                    IN        s0, timer_id + 0
+                    TEST      s0, $02
+                    JUMP      Z, wait_1s_hard_loop
+
+; ;                 restore
+                    SUB       sp, 1
+                    FETCH     s0, sp
+                    RET       
+
 ; ;------------------------------------
 ; ; wait_100ms
 ; ; arguments : none
@@ -93,32 +119,39 @@ wait_1s:
 ; ; Attendre 100 ms
 ; ;------------------------------------
 wait_100ms: 
-                    CALL      wait_100ms_soft
+                    CALL      wait_100ms_hard
                     RET       
 
 wait_100ms_hard: 
 ; ;                 save
-                    STORE     s0, sF
-                    ADD       sF, 1
+                    STORE     s0, sp
+                    ADD       sp, 1
 
-; ;                 Timer hardware version
-                    LOAD      s0, 100
-                    OUT       s0, timer_id + 4
-                    
 ; ; 	            Timer Disable
                     LOAD      s0, $00
                     OUT       s0, timer_id + 0
+
+; ;                 Timer hardware version
+; ;                 Set 100 in counter
+                    LOAD      s0, $64
+                    OUT       s0, timer_id + 4
+                    LOAD      s0, $00
+                    OUT       s0, timer_id + 5
+                    OUT       s0, timer_id + 6
+                    OUT       s0, timer_id + 7
+
 ; ; 	            Timer Enable + Use Tick
                     LOAD      s0, $11
                     OUT       s0, timer_id + 0
+
 wait_100ms_hard_loop: 
                     IN        s0, timer_id + 0
                     TEST      s0, $02
                     JUMP      Z, wait_100ms_hard_loop
 
 ; ;                 restore
-                    SUB       sF, 1
-                    FETCH     s0, sF
+                    SUB       sp, 1
+                    FETCH     s0, sp
                     RET       
 
 wait_100ms_soft: 
@@ -139,12 +172,12 @@ wait_100ms_soft:
 ; ; 				N2 = 247
 
 ; ;                 save
-                    STORE     s0, sF
-                    ADD       sF, 1
-                    STORE     s1, sF
-                    ADD       sF, 1
-                    STORE     s2, sF
-                    ADD       sF, 1
+                    STORE     s0, sp
+                    ADD       sp, 1
+                    STORE     s1, sp
+                    ADD       sp, 1
+                    STORE     s2, sp
+                    ADD       sp, 1
 
 ; ;                 while1 : W0= 2 + N0*(2+W1) + 1
                     LOAD      s0, 42
@@ -172,13 +205,15 @@ wait_100ms_while0:
                     JUMP      NZ, wait_100ms_while0_body
 
 ; ;                 restore
-                    SUB       sF, 1
-                    FETCH     s2, sF
-                    SUB       sF, 1
-                    FETCH     s1, sF
-                    SUB       sF, 1
-                    FETCH     s0, sF
+                    SUB       sp, 1
+                    FETCH     s2, sp
+                    SUB       sp, 1
+                    FETCH     s1, sp
+                    SUB       sp, 1
+                    FETCH     s0, sp
                     RET       
+
+
 ; ;------------------------------------
 ; ; Interrupt VECTOR
 ; ;------------------------------------

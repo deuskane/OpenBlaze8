@@ -6,7 +6,7 @@
 -- Author     : Cédric DEBARGE
 -- Company    :
 -- Created    : 2017-03-31
--- Last update: 2017-04-11
+-- Last update: 2017-05-01
 -- Platform   :
 -- Standard   : VHDL'93/02
 -------------------------------------------------------------------------------
@@ -49,6 +49,7 @@ begin  -- architecture rtl
   generic map
     (FSYS      => FSYS    
     ,FSYS_INT  => FSYS_INT
+    ,USE_KCPSM => false
     ,NB_SWITCH => 6
     ,NB_LED    => 8
     )
