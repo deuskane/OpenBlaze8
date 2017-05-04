@@ -6,7 +6,7 @@
 -- Author     : Mathieu Rosiere
 -- Company    : 
 -- Created    : 2017-04-26
--- Last update: 2017-04-26
+-- Last update: 2017-04-28
 -- Platform   : 
 -- Standard   : VHDL'93/02
 -------------------------------------------------------------------------------
@@ -26,8 +26,9 @@ use work.pbi_pkg.all;
 
 entity pbi_timer is
   generic(
-    FSYS             : positive := 50_000_000;
-    TICK_PERIOD      : real     := 0.001; -- 1ms
+--  FSYS             : positive := 50_000_000;
+--  TICK_PERIOD      : real     := 0.001; -- 1ms
+    TICK             : positive := 1000; -- FSYS * TICK_PERIOD
     IT_ENABLE        : boolean  := false; -- Timer can generate interruption
     ID               : std_logic_vector (PBI_ADDR_WIDTH-1 downto 0) := (others => '0')
     );
@@ -83,8 +84,9 @@ begin  -- architecture rtl
 
   ins_timer : entity work.timer(rtl)
   generic map(
-    FSYS             => FSYS          ,
-    TICK_PERIOD      => TICK_PERIOD   ,
+--  FSYS             => FSYS          ,
+--  TICK_PERIOD      => TICK_PERIOD   ,
+    TICK             => TICK          ,
     SIZE_ADDR        => SIZE_ADDR_IP  ,
     SIZE_DATA        => PBI_DATA_WIDTH,  
     IT_ENABLE        => IT_ENABLE  

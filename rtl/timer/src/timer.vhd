@@ -6,7 +6,7 @@
 -- Author     : Mathieu Rosiere
 -- Company    : 
 -- Created    : 2017-04-12
--- Last update: 2017-04-26
+-- Last update: 2017-05-04
 -- Platform   : 
 -- Standard   : VHDL'93/02
 -------------------------------------------------------------------------------
@@ -39,8 +39,9 @@ use IEEE.numeric_std.ALL;
 
 entity timer is
   generic(
-    FSYS             : positive := 50_000_000;
-    TICK_PERIOD      : real     := 0.001; -- 1ms
+--  FSYS             : positive := 50_000_000;
+--  TICK_PERIOD      : real     := 0.001; -- 1ms
+    TICK             : positive := 1000;
     SIZE_ADDR        : natural  := 3;     -- Bus Address Width
     SIZE_DATA        : natural  := 8;     -- Bus Data    Width
     IT_ENABLE        : boolean  := false  -- Timer can generate interruption
@@ -69,7 +70,7 @@ end entity timer;
 
 architecture rtl of timer is
   constant CST0 : std_logic_vector(1024-1 downto 0) := (others => '0');
-  constant TICK : positive := positive(real(FSYS)*TICK_PERIOD);
+--constant TICK : positive := positive(real(FSYS)*TICK_PERIOD);
   
   -----------------------------------------------------------------------------
   -- Address
@@ -220,7 +221,9 @@ begin  -- architecture rtl
       timer_autostart_r <= '0';
       timer_it_enable_r <= '0';
       timer_use_tick_r  <= '0';
-        
+      
+      counter_cur_r     <= (others => '0');
+      counter_r         <= (others => '0');
     elsif clk_i'event and clk_i = '1'
     then  -- rising clock edge
       if cke_i = '1'
@@ -309,7 +312,7 @@ begin  -- architecture rtl
   -- First cycle
   -- or last cycle and autostart
   timer_begin        <= (timer_enable_r and not timer_enable_r2) or (timer_end and timer_autostart_r);
-  timer_end          <= timer_enable_r and counter_cur_null;
+  timer_end          <= timer_enable_r2 and counter_cur_null;
   timer_count        <= timer_enable_r when timer_use_tick_r = '0' else
                         tick_event; -- count each cycle
 

@@ -6,7 +6,7 @@
 -- Author     : mrosiere
 -- Company    : 
 -- Created    : 2016-11-11
--- Last update: 2017-04-26
+-- Last update: 2017-05-01
 -- Platform   : 
 -- Standard   : VHDL'93/02
 -------------------------------------------------------------------------------
@@ -78,8 +78,10 @@ begin
   ------------------------------------------------
   dut : entity work.timer(rtl)
   generic map
-   (FSYS             => FSYS      
-   ,TICK_PERIOD      => TICK_PERIOD
+  (
+ -- FSYS             => FSYS      
+ --,TICK_PERIOD      => TICK_PERIOD
+    TICK             => positive(real(FSYS)*TICK_PERIOD)
    ,SIZE_ADDR        => SIZE_ADDR 
    ,SIZE_DATA        => SIZE_DATA 
    ,IT_ENABLE        => IT_ENABLE 
