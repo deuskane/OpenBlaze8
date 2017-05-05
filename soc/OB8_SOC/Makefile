@@ -2,7 +2,7 @@ ifeq ("$(ASYLUM_INFRA_HOME)","")
 $(error Environment variable "ASYLUM_INFRA_HOME" must be set)
 endif
 
-IP_DEPS       = pbi_OpenBlaze8		\
+IP_DEPS       = pbi_PicoBlaze 		\
 		pbi_GPIO		\
 		pbi_timer		\
 		pbi_vga_controller	\
