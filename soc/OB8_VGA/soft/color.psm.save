@@ -19,17 +19,14 @@ color               EQU       sE
 ; ;------------------------------------
 switch_id           EQU       $00
 led_id              EQU       $04
-vga_id              EQU       $80
+vga_id              EQU       $08
 timer_id            EQU       $10
 
 switch              DSIN      switch_id
 led                 DSOUT     led_id
 vga_config          DSOUT     vga_id + 0
-vga_fb_num          DSOUT     vga_id + 1
-vga_fb_color        DSOUT     vga_id + 2
-vga_fb_addr_x       DSOUT     vga_id + 3
-vga_fb_addr_y       DSOUT     vga_id + 5
-vga_fb_data         DSOUT     vga_id + 7
+vga_color           DSOUT     vga_id + 1
+vga_txt             DSOUT     vga_id + 2
 timer_ctrl_w        DSOUT     timer_id + 0
 timer_ctrl_r        DSIN      timer_id + 0
 timer_cnt0          DSOUT     timer_id + 4
@@ -41,89 +38,36 @@ timer_cnt3          DSOUT     timer_id + 7
 ; ;------------------------------------
                     ORG       $00
 main: 
-;                   mode unicolor
-                    LOAD      s0, $01
-                    OUT       s0, vga_config
-                    
-					LOAD      s0, $01
-                    OUT       s0, vga_fb_num
-                    LOAD      color, $ff
-                    OUT       color, vga_fb_color
-
-					load      s2, $01
-					
-					load      s0, $00
-					out       s0,vga_fb_addr_x
-					out       s0,vga_fb_addr_y
-					out       s2,vga_fb_data
-					add		  s0,1
-					out       s0,vga_fb_addr_x
-					out       s0,vga_fb_addr_y
-					out       s2,vga_fb_data
-					add		  s0,1
-					out       s0,vga_fb_addr_x
-					out       s0,vga_fb_addr_y
-					out       s2,vga_fb_data
-					add		  s0,1
-					out       s0,vga_fb_addr_x
-					out       s0,vga_fb_addr_y
-					out       s2,vga_fb_data
-					add		  s0,1
-					out       s0,vga_fb_addr_x
-					out       s0,vga_fb_addr_y
-					out       s2,vga_fb_data
-					add		  s0,1
-					out       s0,vga_fb_addr_x
-					out       s0,vga_fb_addr_y
-					out       s2,vga_fb_data
-					add		  s0,1
-					out       s0,vga_fb_addr_x
-					out       s0,vga_fb_addr_y
-					out       s2,vga_fb_data
-					add		  s0,1
-					out       s0,vga_fb_addr_x
-					out       s0,vga_fb_addr_y
-					out       s2,vga_fb_data
-					add		  s0,1
-					out       s0,vga_fb_addr_x
-					out       s0,vga_fb_addr_y
-					out       s2,vga_fb_data
-					
-
-					LOAD      s0, $00
-                    OUT       s0, vga_fb_num
-                    LOAD      color, $00
-                    OUT       color, vga_fb_color
-
 ; LOAD      s0, 1
 ; OUT       s0, vga_id + 0
 ; LOAD      color, 0
-; LOAD      color, $41
-; 
-; LOAD      s0, $57 + $0D
-; OUT       s0, vga_id + 2
-; LOAD      s0, $57 + $0E
-; OUT       s0, vga_id + 2
-; LOAD      s0, $57 + $0A
-; OUT       s0, vga_id + 2
-; LOAD      s0, $57 + $0D
-; OUT       s0, vga_id + 2
-; LOAD      s0, $57 + $0B
-; OUT       s0, vga_id + 2
-; LOAD      s0, $57 + $0E
-; OUT       s0, vga_id + 2
-; LOAD      s0, $57 + $0E
-; OUT       s0, vga_id + 2
-; LOAD      s0, $57 + $0F
-; OUT       s0, vga_id + 2
+                    LOAD      color, $41
+
+                    LOAD      s0, $57 + $0D
+                    OUT       s0, vga_id + 2
+                    LOAD      s0, $57 + $0E
+                    OUT       s0, vga_id + 2
+                    LOAD      s0, $57 + $0A
+                    OUT       s0, vga_id + 2
+                    LOAD      s0, $57 + $0D
+                    OUT       s0, vga_id + 2
+                    LOAD      s0, $57 + $0B
+                    OUT       s0, vga_id + 2
+                    LOAD      s0, $57 + $0E
+                    OUT       s0, vga_id + 2
+                    LOAD      s0, $57 + $0E
+                    OUT       s0, vga_id + 2
+                    LOAD      s0, $57 + $0F
+                    OUT       s0, vga_id + 2
 
 main_loop: 
                     IN        s0, SWITCH_ID
-                    AND       s0, $03
+                    AND       s0, $01
                     OUT       s0, led_id
-                    OUT       s0, vga_config
-                    OUT       color, vga_fb_color
-                    ADD       color, 1
+                    OUT       s0, vga_id + 0
+
+                    OUT       color, vga_id + 1
+                    add       color, 1
                     CALL      wait_1s
                     JUMP      main_loop
 
@@ -151,11 +95,11 @@ wait_1s:
 ; ; results   : none
 ; ; Attendre 100 ms
 ; ;------------------------------------
-wait_100ms: 
+wait_100ms:
                     CALL      wait_100ms_hard
-                    RET       
+                    RET
 
-wait_100ms_hard: 
+wait_100ms_hard:
 ; ;                 save
                     STORE     s0, sp
                     ADD       sp, 1
@@ -177,7 +121,7 @@ wait_100ms_hard:
                     LOAD      s0, $11
                     OUT       s0, timer_id + 0
 
-wait_100ms_hard_loop: 
+wait_100ms_hard_loop:
                     IN        s0, timer_id + 0
                     TEST      s0, $02
                     JUMP      Z, wait_100ms_hard_loop
@@ -185,7 +129,7 @@ wait_100ms_hard_loop:
 ; ;                 restore
                     SUB       sp, 1
                     FETCH     s0, sp
-                    RET       
+                    RET
 
 ; ;------------------------------------
 ; ; Interrupt VECTOR

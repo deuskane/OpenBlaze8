@@ -6,7 +6,7 @@
 -- Author     : Mathieu Rosiere
 -- Company    : 
 -- Created    : 2017-03-30
--- Last update: 2017-04-11
+-- Last update: 2017-05-13
 -- Platform   : 
 -- Standard   : VHDL'93/02
 -------------------------------------------------------------------------------
@@ -34,9 +34,9 @@ architecture tb of tb_OB8_VGA is
     signal led_o            : std_logic_vector(7 downto 0);
     signal vga_HSYNC_o      : std_logic;
     signal vga_VSYNC_o      : std_logic;
-    signal vga_Red_o        : std_logic;
-    signal vga_Green_o      : std_logic;
-    signal vga_Blue_o       : std_logic;
+    signal vga_Red_o        : std_logic_vector(2 downto 0);
+    signal vga_Green_o      : std_logic_vector(2 downto 0);
+    signal vga_Blue_o       : std_logic_vector(1 downto 0);
 begin  -- architecture tb
 
   dut : entity work.OB8_VGA(rtl)
@@ -63,7 +63,7 @@ begin  -- architecture tb
 
       arstn_i <= '1';
 
-      switch_i <= "010110";
+      switch_i <= "00000000";
 
       wait;
         

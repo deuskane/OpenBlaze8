@@ -6,7 +6,7 @@
 -- Author     : Mathieu Rosiere
 -- Company    : 
 -- Created    : 2017-03-30
--- Last update: 2017-05-01
+-- Last update: 2017-05-13
 -- Platform   : 
 -- Standard   : VHDL'93/02
 -------------------------------------------------------------------------------
@@ -53,8 +53,8 @@ architecture rtl of OB8_VGA is
   --                                                                                    "00000011"
   constant ID_LED                     : std_logic_vector (PBI_ADDR_WIDTH-1 downto 0) := "00000100";
   --                                                                                    "00000011"
-  constant ID_VGA                     : std_logic_vector (PBI_ADDR_WIDTH-1 downto 0) := "00001000";
-  --                                                                                    "00000011"
+  constant ID_VGA                     : std_logic_vector (PBI_ADDR_WIDTH-1 downto 0) := "10000000";
+  --                                                                                    "00001111"
   constant ID_TIMER                   : std_logic_vector (PBI_ADDR_WIDTH-1 downto 0) := "00010000";
   --                                                                                    "00000111"
 
