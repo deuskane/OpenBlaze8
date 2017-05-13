@@ -6,7 +6,7 @@
 -- Author     : Mathieu Rosiere
 -- Company    : 
 -- Created    : 2017-03-30
--- Last update: 2017-03-31
+-- Last update: 2017-05-13
 -- Platform   : 
 -- Standard   : VHDL'87
 -------------------------------------------------------------------------------
@@ -49,7 +49,7 @@ entity pbi_vga_controller is
 end entity pbi_vga_controller;
 
 architecture rtl of pbi_vga_controller is
-  constant SIZE_ADDR_IP : natural := 2;
+  constant SIZE_ADDR_IP : natural := 3;
   
   signal ip_cs               :  std_logic;
   signal ip_re               :  std_logic;
