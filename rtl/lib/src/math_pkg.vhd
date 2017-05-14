@@ -6,7 +6,7 @@
 -- Author     : mrosiere
 -- Company    : 
 -- Created    : 2016-11-11
--- Last update: 2017-05-13
+-- Last update: 2017-05-14
 -- Platform   : 
 -- Standard   : VHDL'93/02
 -------------------------------------------------------------------------------
@@ -47,12 +47,15 @@ package body math_pkg is
   end function;
 
   function clog2( i : natural) return integer is
-    variable tmp    : integer := i;
-    variable log2_i : integer := 0; 
-  begin					
-    while tmp >= 1 loop
+    variable log2_i : integer := 0;
+    variable pow2   : integer := 0; 
+  begin
+    log2_i := 0;
+    pow2   := 1;
+    
+    while i > pow2 loop
       log2_i := log2_i + 1;
-      tmp    := tmp / 2;     
+      pow2   := pow2 * 2;
     end loop;
 
     return log2_i;

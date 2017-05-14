@@ -50,45 +50,98 @@ main:
                     LOAD      color, $ff
                     OUT       color, vga_fb_color
 
-					load      s2, $01
 					
 					load      s0, $00
+					load      s1, $00
+					load      s2, $01
 					out       s0,vga_fb_addr_x
-					out       s0,vga_fb_addr_y
-					out       s2,vga_fb_data
-					add		  s0,1
-					out       s0,vga_fb_addr_x
-					out       s0,vga_fb_addr_y
-					out       s2,vga_fb_data
-					add		  s0,1
-					out       s0,vga_fb_addr_x
-					out       s0,vga_fb_addr_y
-					out       s2,vga_fb_data
-					add		  s0,1
-					out       s0,vga_fb_addr_x
-					out       s0,vga_fb_addr_y
-					out       s2,vga_fb_data
-					add		  s0,1
-					out       s0,vga_fb_addr_x
-					out       s0,vga_fb_addr_y
-					out       s2,vga_fb_data
-					add		  s0,1
-					out       s0,vga_fb_addr_x
-					out       s0,vga_fb_addr_y
-					out       s2,vga_fb_data
-					add		  s0,1
-					out       s0,vga_fb_addr_x
-					out       s0,vga_fb_addr_y
-					out       s2,vga_fb_data
-					add		  s0,1
-					out       s0,vga_fb_addr_x
-					out       s0,vga_fb_addr_y
-					out       s2,vga_fb_data
-					add		  s0,1
-					out       s0,vga_fb_addr_x
-					out       s0,vga_fb_addr_y
+					out       s1,vga_fb_addr_y
 					out       s2,vga_fb_data
 					
+					load      s0, $00
+					load      s1, $01
+					load      s2, $02
+					out       s0,vga_fb_addr_x
+					out       s1,vga_fb_addr_y
+					out       s2,vga_fb_data
+					
+					load      s0, $00
+					load      s1, $02
+					load      s2, $04
+					out       s0,vga_fb_addr_x
+					out       s1,vga_fb_addr_y
+					out       s2,vga_fb_data					
+										
+					load      s0, $00
+					load      s1, $03
+					load      s2, $08
+					out       s0,vga_fb_addr_x
+					out       s1,vga_fb_addr_y
+					out       s2,vga_fb_data					
+					
+					load      s0, $01
+					load      s1, $04
+					load      s2, $01
+					out       s0,vga_fb_addr_x
+					out       s1,vga_fb_addr_y
+					out       s2,vga_fb_data
+					
+					load      s0, $01
+					load      s1, $05
+					load      s2, $02
+					out       s0,vga_fb_addr_x
+					out       s1,vga_fb_addr_y
+					out       s2,vga_fb_data
+					
+					load      s0, $01
+					load      s1, $06
+					load      s2, $04
+					out       s0,vga_fb_addr_x
+					out       s1,vga_fb_addr_y
+					out       s2,vga_fb_data					
+										
+					load      s0, $01
+					load      s1, $07
+					load      s2, $08
+					out       s0,vga_fb_addr_x
+					out       s1,vga_fb_addr_y
+					out       s2,vga_fb_data					
+					
+										
+					LOAD      s0, $02
+                    OUT       s0, vga_fb_num
+                    LOAD      color, $e0
+                    OUT       color, vga_fb_color
+
+					load      s0, $00
+					load      s2, $01
+					out       s0,vga_fb_addr_x
+					out       s0,vga_fb_addr_y
+					out       s2,vga_fb_data
+					add		  s0,1
+					out       s0,vga_fb_addr_y
+					out       s2,vga_fb_data
+					add		  s0,1
+					out       s0,vga_fb_addr_y
+					out       s2,vga_fb_data
+					add		  s0,1
+					out       s0,vga_fb_addr_y
+					out       s2,vga_fb_data
+					add		  s0,1
+					out       s0,vga_fb_addr_y
+					out       s2,vga_fb_data
+					add		  s0,1
+					out       s0,vga_fb_addr_y
+					out       s2,vga_fb_data
+					add		  s0,1
+					out       s0,vga_fb_addr_y
+					out       s2,vga_fb_data
+					add		  s0,1
+					out       s0,vga_fb_addr_y
+					out       s2,vga_fb_data
+					add		  s0,1
+					out       s0,vga_fb_addr_y
+					out       s2,vga_fb_data
 
 					LOAD      s0, $00
                     OUT       s0, vga_fb_num

@@ -6,7 +6,7 @@
 -- Author     : Mathieu Rosiere
 -- Company    : 
 -- Created    : 2013-12-26
--- Last update: 2017-05-13
+-- Last update: 2017-05-14
 -- Platform   : 
 -- Standard   : VHDL'87
 -------------------------------------------------------------------------------
@@ -52,8 +52,6 @@ use work.math_pkg.all;
 
 entity vga_controller is
   generic(FSYS           : positive := 50_000_000;
-          NB_FRAME       : natural  := 1;     -- 0 to 16
-          TEXT_MODE      : boolean  := false;
           SIZE_ADDR      : positive := 3;
           SIZE_DATA      : positive := 8
           );
@@ -110,6 +108,9 @@ architecture rtl of vga_controller is
   -----------------------------------------------------------------------------
   -- Local parameters
   -----------------------------------------------------------------------------
+  constant NB_FRAME                  : natural  := 1;     -- 0 to 16
+  constant TEXT_MODE                 : boolean  := false;
+  
   -- Static configuration for 640x480 60Hz
   constant CLK_PIXEL_RATIO           : natural := FSYS/25_000_000;
   constant DISPLAY_X_LINES           : natural := 640;
@@ -118,24 +119,25 @@ architecture rtl of vga_controller is
   constant ADDR_X                    : natural := 11;
   constant ADDR_Y                    : natural := 11;
 
-  -- 640*480 -> 307_200 bits
-  -- Downscale |   X |   Y | size
-  --         1 | 640 | 480 | 307_200
-  --        16 |  40 |  30 |   1_200
-  --        20 |  32 |  24 |     768
-  --        32 |  20 |  15 |     600
+  -----------+-----+-----+---------
+  -- Upscale |   X |   Y |    size
+  -----------+-----+-----+---------
+  --       1 | 640 | 480 | 307_200
+  --      16 |  40 |  30 |   1_200
+  --      20 |  32 |  24 |     768
+  --      32 |  20 |  15 |     300
 
-  constant FRAME_BUFFER_DOWNSCALE    : natural := 32;
-  constant FRAME_BUFFER_X_LINES      : natural := DISPLAY_X_LINES/FRAME_BUFFER_DOWNSCALE;
-  constant FRAME_BUFFER_Y_LINES      : natural := DISPLAY_Y_LINES/FRAME_BUFFER_DOWNSCALE;
+  constant FRAME_BUFFER_UPSCALE      : natural := 32;
+  constant FRAME_BUFFER_X_LINES      : natural := DISPLAY_X_LINES/FRAME_BUFFER_UPSCALE;
+  constant FRAME_BUFFER_Y_LINES      : natural := DISPLAY_Y_LINES/FRAME_BUFFER_UPSCALE;
   constant FRAME_BUFFER_ADDR_X       : natural := clog2(FRAME_BUFFER_X_LINES);
   constant FRAME_BUFFER_ADDR_Y       : natural := clog2(FRAME_BUFFER_Y_LINES);
-  constant FRAME_BUFFER_WIDTH        : natural := 1;
+  constant FRAME_BUFFER_WIDTH        : natural := 4;
   constant FRAME_BUFFER_SIZE         : natural := (FRAME_BUFFER_X_LINES*FRAME_BUFFER_Y_LINES);
   constant FRAME_BUFFER_DEPTH        : natural := FRAME_BUFFER_SIZE/FRAME_BUFFER_WIDTH;
   constant FRAME_BUFFER_ADDR         : natural := clog2(FRAME_BUFFER_SIZE);
   constant FRAME_BUFFER_ADDR_INDEX   : natural := clog2(FRAME_BUFFER_DEPTH);
-  constant FRAME_BUFFER_ADDR_OFFSET  : natural :=  log2(FRAME_BUFFER_WIDTH);
+  constant FRAME_BUFFER_ADDR_OFFSET  : natural := clog2(FRAME_BUFFER_WIDTH);
   
 --constant CHAR_X_MAX                : natural := 8 ;    -- 640x480 : 
 --constant CHAR_Y_MAX                : natural := 16;    -- 640x480 : 
@@ -192,7 +194,7 @@ architecture rtl of vga_controller is
   end function;
 
   -- Convert 2D to 1D address
-  function address_downscale
+  function address_upscale
     (
     signal   addr   : std_logic_vector;
     constant ratio  : natural
@@ -237,7 +239,7 @@ architecture rtl of vga_controller is
   signal vga_HCOUNT                    : std_logic_vector(ADDR_X-1 downto 0);             -- Horizontal Position
   signal vga_VCOUNT                    : std_logic_vector(ADDR_Y-1 downto 0);             -- Vertical   Position
 
-  signal frame_buffer_num_r            : std_logic_vector(max(1,clog2(NB_FRAME))-1 downto 0); -- Frame Buffer number
+  signal frame_buffer_num_r            : std_logic_vector(clog2(NB_FRAME) downto 0);      -- Frame Buffer number
 
   signal frame_buffer_x_addr_r         : std_logic_vector(FRAME_BUFFER_ADDR_X-1 downto 0);             -- Address X position
   signal frame_buffer_y_addr_r         : std_logic_vector(FRAME_BUFFER_ADDR_Y-1 downto 0);             -- Address Y position
@@ -386,8 +388,8 @@ begin
   -- Frame Buffer read address
   -----------------------------------------------------------------------------
 
-  frame_buffer_x_raddr<= address_downscale(frame_buffer_x       ,FRAME_BUFFER_DOWNSCALE);
-  frame_buffer_y_raddr<= address_downscale(frame_buffer_y       ,FRAME_BUFFER_DOWNSCALE);
+  frame_buffer_x_raddr<= address_upscale(frame_buffer_x,FRAME_BUFFER_UPSCALE);
+  frame_buffer_y_raddr<= address_upscale(frame_buffer_y,FRAME_BUFFER_UPSCALE);
 
   -----------------------------------------------------------------------------
   -- Frame Buffer write address
@@ -422,8 +424,8 @@ begin
 --  end if;
 --end process;
 --
---frame_buffer_x_waddr<= address_downscale(frame_buffer_x_addr_r,FRAME_BUFFER_DOWNSCALE);
---frame_buffer_y_waddr<= address_downscale(frame_buffer_y_addr_r,FRAME_BUFFER_DOWNSCALE);
+--frame_buffer_x_waddr<= address_upscale(frame_buffer_x_addr_r,FRAME_BUFFER_UPSCALE);
+--frame_buffer_y_waddr<= address_upscale(frame_buffer_y_addr_r,FRAME_BUFFER_UPSCALE);
 
   process(arstn_i,clk_i)
   begin 
@@ -449,7 +451,6 @@ begin
   
   frame_buffer_x_waddr<= std_logic_vector(resize(unsigned(frame_buffer_x_addr_r), frame_buffer_x_waddr'length));
   frame_buffer_y_waddr<= std_logic_vector(resize(unsigned(frame_buffer_y_addr_r), frame_buffer_y_waddr'length));
-
   
   -----------------------------------------------------------------------------
   -- Frame Buffer
@@ -457,10 +458,10 @@ begin
   frame_buffer_read_en    <= not vga_Blank;
   frame_buffer_read_addr  <= std_logic_vector(resize(unsigned(conv_address(frame_buffer_x_raddr,frame_buffer_y_raddr,FRAME_BUFFER_X_LINES)),frame_buffer_read_addr'length));
 
-  frame_buffer_write_addr <= std_logic_vector(resize(unsigned(conv_address(frame_buffer_x_waddr,frame_buffer_y_waddr,FRAME_BUFFER_X_LINES)),frame_buffer_read_addr'length));
+  frame_buffer_write_addr <= std_logic_vector(resize(unsigned(conv_address(frame_buffer_x_waddr,frame_buffer_y_waddr,FRAME_BUFFER_X_LINES/FRAME_BUFFER_WIDTH)),frame_buffer_read_addr'length));
   frame_buffer_write_data <= wdata_i(frame_buffer_write_data'range);
 
-  frame_buffer_write_addr_index <= frame_buffer_write_addr;
+  frame_buffer_write_addr_index <= frame_buffer_write_addr(frame_buffer_write_addr_index'range);
   
   gen_frame_buffer: for i in 1 to NB_FRAME
   generate
