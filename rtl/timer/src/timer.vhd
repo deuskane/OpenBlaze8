@@ -6,19 +6,19 @@
 -- Author     : Mathieu Rosiere
 -- Company    : 
 -- Created    : 2017-04-12
--- Last update: 2017-05-04
+-- Last update: 2018-06-01
 -- Platform   : 
 -- Standard   : VHDL'93/02
 -------------------------------------------------------------------------------
 -- Description:
 -- Register Map :
--- [0] R/W   : Control
+-- [0] R     : Status
+--             b0 Timer Event  (reset on reset)
+-- [1] R/W   : Control
 --             b0 Timer Enable (start/stop)
---             b1 Timer Event  (reset)
---             b2 Autostart after Event
---             b3 Event managed by interruption
---             b4 Tick count (else clock count)
--- [1]       : Reserved
+--             b1 Autostart after Event
+--             b2 Event managed by interruption
+--             b3 Tick count (else clock count)
 -- [2]       : Reserved
 -- [3]       : Reserved
 -- [4] R/W   : Counter (byte 0)
@@ -29,8 +29,9 @@
 -- Copyright (c) 2017 
 -------------------------------------------------------------------------------
 -- Revisions  :
--- Date        Version  Author  Description
--- 2017-04-12  1.0      mrosiere	Created
+-- Date       Version Author   Description
+-- 2018-06-01 1.1     mrosiere Move Event in dedicated register	
+-- 2017-04-12 1.0     mrosiere Created
 -------------------------------------------------------------------------------
 
 library IEEE;
@@ -75,7 +76,8 @@ architecture rtl of timer is
   -----------------------------------------------------------------------------
   -- Address
   -----------------------------------------------------------------------------
-  constant raddr_control    : std_logic_vector(SIZE_ADDR-1 downto 0) := std_logic_vector(to_unsigned(0, SIZE_ADDR));
+  constant raddr_status     : std_logic_vector(SIZE_ADDR-1 downto 0) := std_logic_vector(to_unsigned(0, SIZE_ADDR));
+  constant raddr_control    : std_logic_vector(SIZE_ADDR-1 downto 0) := std_logic_vector(to_unsigned(1, SIZE_ADDR));
   constant raddr_data       : std_logic_vector(SIZE_ADDR-1 downto 0) := std_logic_vector(to_unsigned(4, SIZE_ADDR));
   constant raddr_data_byte0 : std_logic_vector(SIZE_ADDR-1 downto 0) := std_logic_vector(to_unsigned(4, SIZE_ADDR));
   constant raddr_data_byte1 : std_logic_vector(SIZE_ADDR-1 downto 0) := std_logic_vector(to_unsigned(5, SIZE_ADDR));
@@ -99,7 +101,8 @@ architecture rtl of timer is
   signal timer_it_enable_r : std_logic;    -- Timer generate an interruption on event
   signal timer_use_tick_r  : std_logic;    -- Timer source (0 : clock, 1 : tick)
 
-  signal control_r         : std_logic_vector(5 -1 downto 0);
+  signal status_r          : std_logic_vector(1 -1 downto 0);
+  signal control_r         : std_logic_vector(4 -1 downto 0);
 
   signal counter_r         : std_logic_vector(32-1 downto 0);  -- Counter value
   signal counter_cur_r     : std_logic_vector(32-1 downto 0);  -- Counter value
@@ -154,14 +157,17 @@ begin  -- architecture rtl
   end generate gen_counter_read_32b;
 
   -- Control register
+  status_r(0) <= timer_event_r;
+
+  -- Control register
   control_r <= (timer_use_tick_r  &
                 timer_it_enable_r &
                 timer_autostart_r &
-                timer_event_r     &
                 timer_enable_r);
 
   -- Read data multiplexor
-  rdata_o   <= std_logic_vector(resize(unsigned(control_r), rdata_o'length)) when (addr_i = raddr_control) else
+  rdata_o   <= std_logic_vector(resize(unsigned(status_r ), rdata_o'length)) when (addr_i = raddr_status ) else
+               std_logic_vector(resize(unsigned(control_r), rdata_o'length)) when (addr_i = raddr_control) else
                counter_rdata;
 
   -----------------------------------------------------------------------------
@@ -249,16 +255,25 @@ begin  -- architecture rtl
           timer_enable_r <= '0';
         end if;
 
+        -- User Read
+        if (cs_i = '1' and we_i = '0')
+        then
+          if (addr_i = raddr_status)
+          then
+            -- Reset on read
+            timer_event_r     <= '0';
+          end if;
+        end if;
+          
         -- User Write
         if (cs_i = '1' and we_i = '1')
         then
           if (addr_i = waddr_control)
           then
             timer_enable_r    <= wdata_i(0);
-            timer_event_r     <= wdata_i(1) and timer_event_r;
-            timer_autostart_r <= wdata_i(2);
-            timer_it_enable_r <= wdata_i(3);
-            timer_use_tick_r  <= wdata_i(4);
+            timer_autostart_r <= wdata_i(1);
+            timer_it_enable_r <= wdata_i(2);
+            timer_use_tick_r  <= wdata_i(3);
           end if;
           
           for i in 3 downto 0
