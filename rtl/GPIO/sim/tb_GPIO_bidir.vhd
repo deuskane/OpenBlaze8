@@ -6,7 +6,7 @@
 -- Author     : mrosiere
 -- Company    : 
 -- Created    : 2017-03-25
--- Last update: 2017-03-26
+-- Last update: 2018-06-01
 -- Platform   : 
 -- Standard   : VHDL'93/02
 -------------------------------------------------------------------------------
@@ -55,13 +55,11 @@ architecture tb of tb_GPIO_bidir is
   signal wdata_i          : std_logic_vector (SIZE_DATA-1 downto 0);
   signal rdata_o          : std_logic_vector (SIZE_DATA-1 downto 0);
   signal busy_o           : std_logic;
-  signal data_io          : std_logic_vector (NB_IO-1     downto 0);
+  signal data_i           : std_logic_vector (NB_IO-1     downto 0);
+  signal data_o           : std_logic_vector (NB_IO-1     downto 0);
+  signal data_oe_o        : std_logic_vector (NB_IO-1     downto 0);
   signal interrupt_o      : std_logic;
   signal interrupt_ack_i  : std_logic;
-
-  signal data_io_oe       : std_logic_vector (NB_IO-1     downto 0);
-  signal data_io_out      : std_logic_vector (NB_IO-1     downto 0);
-  signal data_io_in       : std_logic_vector (NB_IO-1     downto 0);
 begin
 
   ------------------------------------------------
@@ -87,7 +85,11 @@ begin
     wdata_i          => wdata_i        ,
     rdata_o          => rdata_o        ,
     busy_o           => busy_o         ,
-    data_io          => data_io        ,
+
+    data_i           => data_i         ,
+    data_o           => data_o         ,
+    data_oe_o        => data_oe_o      ,
+    
     interrupt_o      => interrupt_o    ,
     interrupt_ack_i  => interrupt_ack_i
     );
@@ -121,7 +123,7 @@ begin
     addr_i          <= X"00";
     wdata_i         <= X"00";
     interrupt_ack_i <= '0';
-    data_io         <= (others => 'L');
+    data_i          <= (others => 'L');
     
     wait until rising_edge(clk_i);
     arstn_i         <= '1';
@@ -167,7 +169,7 @@ begin
     report "[TESTBENCH] Write data";
     cs_i            <= '1';
     addr_i          <= X"00";
-    data_io         <= (i=> 'H', others => 'L');
+    data_i          <= (i=> 'H', others => 'L');
     wait until rising_edge(clk_i);
     re_i            <= '1';
 
