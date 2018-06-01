@@ -87,7 +87,7 @@ wait_1s_hard:
 
 ; ; 	            Timer Disable
                     LOAD      s0, $00
-                    OUT       s0, timer_id + 0
+                    OUT       s0, timer_id + 1
 
 ; ;                 Timer hardware version
 ; ;                 Set 1000 in counter
@@ -100,11 +100,11 @@ wait_1s_hard:
                     OUT       s0, timer_id + 7
 
 ; ; 	            Timer Enable + Use Tick
-                    LOAD      s0, $11
-                    OUT       s0, timer_id + 0
+                    LOAD      s0, $09
+                    OUT       s0, timer_id + 1
 wait_1s_hard_loop: 
                     IN        s0, timer_id + 0
-                    TEST      s0, $02
+                    TEST      s0, $01
                     JUMP      Z, wait_1s_hard_loop
 
 ; ;                 restore
@@ -141,12 +141,12 @@ wait_100ms_hard:
                     OUT       s0, timer_id + 7
 
 ; ; 	            Timer Enable + Use Tick
-                    LOAD      s0, $11
-                    OUT       s0, timer_id + 0
+                    LOAD      s0, $09
+                    OUT       s0, timer_id + 1
 
 wait_100ms_hard_loop: 
                     IN        s0, timer_id + 0
-                    TEST      s0, $02
+                    TEST      s0, $01
                     JUMP      Z, wait_100ms_hard_loop
 
 ; ;                 restore
