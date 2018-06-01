@@ -6,7 +6,7 @@
 -- Author     : mrosiere
 -- Company    : 
 -- Created    : 2016-11-11
--- Last update: 2017-05-01
+-- Last update: 2018-06-01
 -- Platform   : 
 -- Standard   : VHDL'93/02
 -------------------------------------------------------------------------------
@@ -140,7 +140,7 @@ begin
     
     cs_i            <= '1';
     we_i            <= '1';
-    addr_i          <= "000"; -- control
+    addr_i          <= "001"; -- control
     wdata_i         <= X"00"; -- Timer disable
     run(1);
 
@@ -160,7 +160,7 @@ begin
     wdata_i         <= X"00";
     run(1);
 
-    addr_i          <= "000"; -- control
+    addr_i          <= "001"; -- control
     wdata_i         <= X"01"; -- Timer enable
     run(1);
 
@@ -182,7 +182,7 @@ begin
     cs_i            <= '1';
     we_i            <= '1';
 
-    addr_i          <= "000"; -- control
+    addr_i          <= "001"; -- control
     wdata_i         <= X"00"; -- Timer disable
     run(1);
 
@@ -202,8 +202,8 @@ begin
     wdata_i         <= X"00";
     run(1);
 
-    addr_i          <= "000"; -- control
-    wdata_i         <= X"05"; -- Timer enable, auto start enable
+    addr_i          <= "001"; -- control
+    wdata_i         <= X"03"; -- Timer enable, auto start enable
     run(1);
 
     we_i            <= '0';
@@ -223,7 +223,7 @@ begin
     cs_i            <= '1';
     we_i            <= '1';
 
-    addr_i          <= "000"; -- control
+    addr_i          <= "001"; -- control
     wdata_i         <= X"00"; -- Timer disable
     run(1);
 
@@ -243,8 +243,8 @@ begin
     wdata_i         <= X"00";
     run(1);
 
-    addr_i          <= "000"; -- control
-    wdata_i         <= X"11"; -- Timer enable, tick enable
+    addr_i          <= "001"; -- control
+    wdata_i         <= X"09"; -- Timer enable, tick enable
     run(1);
 
     we_i            <= '0';
